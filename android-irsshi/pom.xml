@@ -9,8 +9,8 @@
     <name>android-irsshi</name>
 
     <properties>
-        <platform.version> 2.3.3
-            </platform.version>
+        <platform.version>2.3.3
+        </platform.version>
     </properties>
 
     <dependencies>
@@ -20,6 +20,18 @@
             <version>${platform.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <version>0.1.49</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-android</artifactId>
+            <version>1.6.1-RC1</version>
+        </dependency>
+
+
     </dependencies>
 
     <build>
@@ -36,7 +48,7 @@
                     <sdk>
                         <platform>10</platform>
                     </sdk>
-                                        <undeployBeforeDeploy>true</undeployBeforeDeploy>
+                    <undeployBeforeDeploy>true</undeployBeforeDeploy>
                 </configuration>
                 <extensions>true</extensions>
             </plugin>

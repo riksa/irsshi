@@ -1,0 +1,3 @@
+[submodule "Android-Terminal-Emulator"]
+	path = Android-Terminal-Emulator
+	url = git://github.com/riksa/Android-Terminal-Emulator.git

@@ -5,6 +5,9 @@
     <excludeFromCompile>
       <directory url="file://$PROJECT_DIR$/android-irsshi/target/generated-sources/r" includeSubdirectories="true" />
       <directory url="file://$PROJECT_DIR$/android-irsshi/target/generated-sources/aidl" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/Android-Terminal-Emulator/target/generated-sources/r" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/Android-Terminal-Emulator/libraries/emulatorview/target/generated-sources/r" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/target/generated-sources/r" includeSubdirectories="true" />
     </excludeFromCompile>
     <resourceExtensions />
     <wildcardResourcePatterns>
@@ -29,10 +32,15 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
         <module name="android-irsshi" />
+        <module name="androidterm" />
+        <module name="emulatorview" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="android-irsshi" target="1.6" />
+      <module name="android-irsshi-parent" target="1.6" />
+      <module name="androidterm" target="1.6" />
+      <module name="emulatorview" target="1.6" />
     </bytecodeTargetLevel>
   </component>
 </project>

@@ -3,6 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/android-irsshi/android-irsshi.iml" filepath="$PROJECT_DIR$/android-irsshi/android-irsshi.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android-irsshi-parent.iml" filepath="$PROJECT_DIR$/android-irsshi-parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Android-Terminal-Emulator/androidterm.iml" filepath="$PROJECT_DIR$/Android-Terminal-Emulator/androidterm.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Android-Terminal-Emulator/libraries/emulatorview/emulatorview.iml" filepath="$PROJECT_DIR$/Android-Terminal-Emulator/libraries/emulatorview/emulatorview.iml" />
     </modules>
   </component>
 </project>

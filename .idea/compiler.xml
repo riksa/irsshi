@@ -8,6 +8,8 @@
       <directory url="file://$PROJECT_DIR$/Android-Terminal-Emulator/target/generated-sources/r" includeSubdirectories="true" />
       <directory url="file://$PROJECT_DIR$/Android-Terminal-Emulator/libraries/emulatorview/target/generated-sources/r" includeSubdirectories="true" />
       <directory url="file://$PROJECT_DIR$/target/generated-sources/r" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/Android-Terminal-Emulator/target/generated-sources/aidl" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/Android-Terminal-Emulator/libraries/emulatorview/target/generated-sources/aidl" includeSubdirectories="true" />
     </excludeFromCompile>
     <resourceExtensions />
     <wildcardResourcePatterns>

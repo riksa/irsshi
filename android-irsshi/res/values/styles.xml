@@ -1,0 +1,37 @@
+<resources>
+
+    <style name="fragment_layout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:padding">8dp</item>
+    </style>
+
+    <style name="fragment_layout_host_list" parent="fragment_layout"></style>
+
+    <style name="label">
+        <item name="android:padding">8dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="col">
+        <item name="android:layout_gravity">center</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="col_host_list_hostname" parent="col">
+        <!--<item name="android:layout_width">match_parent</item>-->
+        <item name="android:layout_weight">1</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="col_host_list_type" parent="col"></style>
+
+    <style name="col_host_list_port" parent="col"></style>
+
+    <style name="col_host_list_username" parent="col"></style>
+
+
+</resources>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <!-- Strings that should not be localized -->
+    <string name="hello">Hello android-irsshi!</string>
+    <string name="app_name">irSSHi</string>
+
+</resources>

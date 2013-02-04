@@ -37,7 +37,7 @@
       <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/r" isTestSource="false" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="jdk" jdkName="Android 3.2 Platform" jdkType="Android SDK" />
+    <orderEntry type="inheritedJdk" />
   </component>
 </module>
 

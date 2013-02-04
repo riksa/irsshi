@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="host_types">
+        <item>SSH</item>
+        <item>MOSH</item>
+        <item>LOCAL</item>
+    </string-array>
+
+</resources>

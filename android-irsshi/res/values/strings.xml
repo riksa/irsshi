@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello android-irsshi!</string>
-    <string name="app_name">android-irsshi</string>
+    <!-- Strings that should be localized -->
+
+    <!-- Host List fragment-->
+    <!-- menu items -->
+    <string name="menu_create">Create</string>
+    <string name="menu_import">Import</string>
+
+    <!-- context menu items -->
+    <string name="menu_delete">Delete</string>
+
+    <!-- fragment_host_list -->
+    <string name="host_list_empty">Add a host</string>
 </resources>

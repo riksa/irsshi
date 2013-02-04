@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="4dp">
+
+    <TextView
+        android:id="@+id/col_host_list_type"
+        style="@style/col_host_list_type"
+        android:layout_alignParentLeft="true"
+        android:text="ssh://user@host.ssh:22" />
+
+    <!--<TextView-->
+        <!--android:id="@+id/col_host_list_username"-->
+        <!--style="@style/col_host_list_username"-->
+        <!--android:layout_toRightOf="@id/col_host_list_type"-->
+        <!--android:text="root" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/col_host_list_hostname"-->
+        <!--style="@style/col_host_list_hostname"-->
+        <!--android:layout_toRightOf="@id/col_host_list_username"-->
+        <!--android:text="localhost" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/col_host_list_port"-->
+        <!--style="@style/col_host_list_port"-->
+        <!--android:layout_toRightOf="@id/col_host_list_hostname"-->
+        <!--android:text="22" />-->
+
+
+</RelativeLayout>

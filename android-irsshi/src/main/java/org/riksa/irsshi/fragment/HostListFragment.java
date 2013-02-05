@@ -1,11 +1,17 @@
 package org.riksa.irsshi.fragment;
 
 import android.app.ListFragment;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+import org.riksa.irsshi.IrsshiService;
 import org.riksa.irsshi.R;
 import org.riksa.irsshi.domain.LocalTermHost;
 import org.riksa.irsshi.domain.MoshTermHost;
@@ -25,6 +31,21 @@ import java.util.List;
  */
 public class HostListFragment extends ListFragment {
     private static final Logger log = LoggerFactory.getLogger(HostListFragment.class);
+    private IrsshiService mBoundService;
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            mBoundService = ((IrsshiService.LocalBinder) iBinder).getService();
+            log.debug("onServiceConnected");
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            mBoundService = null;
+            log.debug("onServiceDisconnected");
+        }
+    };
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -40,20 +61,14 @@ public class HostListFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);    //To change body of overridden methods use File | Settings | File Templates.
-        List<TermHost> hosts = new ArrayList<TermHost>();
-        hosts.add(new SshTermHost("some.host.ssh", "someone"));
-        hosts.add(new SshTermHost("another.host.ssh", "someoneelse", 2222));
-        hosts.add(new MoshTermHost("some.host.mosh", "foomosh"));
-        hosts.add(new MoshTermHost("another.host.mosh", "barmosh", 1111));
-        hosts.add(new LocalTermHost());
-        hosts.add(new LocalTermHost("android"));
-
-        setListAdapter(HostListSimpleAdapter.create(getActivity(), hosts));
     }
 
     @Override
     public void onResume() {
         super.onResume();    //To change body of overridden methods use File | Settings | File Templates.
+        getActivity().bindService(new Intent(getActivity(), IrsshiService.class), mConnection, Context.BIND_AUTO_CREATE);
+        List<TermHost> hosts = IrsshiService.getHosts();
+        setListAdapter(HostListSimpleAdapter.create(getActivity(), hosts));
         registerForContextMenu(getListView());
     }
 
@@ -61,6 +76,9 @@ public class HostListFragment extends ListFragment {
     public void onPause() {
         super.onPause();    //To change body of overridden methods use File | Settings | File Templates.
         unregisterForContextMenu(getListView());
+        if (mBoundService != null) {
+            getActivity().unbindService(mConnection);
+        }
     }
 
     @Override

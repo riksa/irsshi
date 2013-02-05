@@ -11,6 +11,7 @@ import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+import org.riksa.irsshi.IrsshiApplication;
 import org.riksa.irsshi.IrsshiService;
 import org.riksa.irsshi.R;
 import org.riksa.irsshi.domain.LocalTermHost;
@@ -31,6 +32,7 @@ import java.util.List;
  */
 public class HostListFragment extends ListFragment {
     private static final Logger log = LoggerFactory.getLogger(HostListFragment.class);
+    /*
     private IrsshiService mBoundService;
 
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -49,7 +51,7 @@ public class HostListFragment extends ListFragment {
             unregisterForContextMenu(getListView());
             log.debug("onServiceDisconnected");
         }
-    };
+    };           */
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -70,15 +72,21 @@ public class HostListFragment extends ListFragment {
     @Override
     public void onResume() {
         super.onResume();    //To change body of overridden methods use File | Settings | File Templates.
-        getActivity().bindService(new Intent(getActivity(), IrsshiService.class), mConnection, Context.BIND_AUTO_CREATE);
+        List<TermHost> hosts = IrsshiApplication.getInstance().getTermHostDao().getHosts();
+        setListAdapter(HostListSimpleAdapter.create(getActivity(), hosts));
+
+        registerForContextMenu(getListView());
+//        getActivity().bindService(new Intent(getActivity(), IrsshiService.class), mConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
     public void onPause() {
         super.onPause();    //To change body of overridden methods use File | Settings | File Templates.
-        if (mBoundService != null) {
-            getActivity().unbindService(mConnection);
-        }
+        unregisterForContextMenu(getListView());
+
+//        if (mBoundService != null) {
+//            getActivity().unbindService(mConnection);
+//        }
     }
 
     @Override

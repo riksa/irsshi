@@ -22,7 +22,6 @@ import java.util.List;
 public class IrsshiService extends Service {
     private static final Logger log = LoggerFactory.getLogger(IrsshiService.class);
     private final IBinder mBinder = new LocalBinder();
-    List<TermHost> hosts = new ArrayList<TermHost>();
 
     public class LocalBinder extends Binder {
         public IrsshiService getService() {
@@ -38,12 +37,6 @@ public class IrsshiService extends Service {
     public void onCreate() {
         super.onCreate();    //To change body of overridden methods use File | Settings | File Templates.
         log.debug("onCreate");
-        hosts.add(new SshTermHost("some.host.ssh", "someone"));
-        hosts.add(new SshTermHost("another.host.ssh", "someoneelse", 2222));
-        hosts.add(new MoshTermHost("some.host.mosh", "foomosh"));
-        hosts.add(new MoshTermHost("another.host.mosh", "barmosh", 1111));
-        hosts.add(new LocalTermHost());
-        hosts.add(new LocalTermHost("android"));
     }
 
     @Override
@@ -56,11 +49,5 @@ public class IrsshiService extends Service {
         super.onDestroy();    //To change body of overridden methods use File | Settings | File Templates.
         log.debug("onDestroy");
     }
-
-    public List<TermHost> getHosts() {
-        return hosts;
-    }
-
-
 
 }

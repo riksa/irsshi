@@ -37,12 +37,16 @@ public class HostListFragment extends ListFragment {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             mBoundService = ((IrsshiService.LocalBinder) iBinder).getService();
+            List<TermHost> hosts = mBoundService.getHosts();
+            setListAdapter(HostListSimpleAdapter.create(getActivity(), hosts));
+            registerForContextMenu(getListView());
             log.debug("onServiceConnected");
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             mBoundService = null;
+            unregisterForContextMenu(getListView());
             log.debug("onServiceDisconnected");
         }
     };
@@ -67,15 +71,11 @@ public class HostListFragment extends ListFragment {
     public void onResume() {
         super.onResume();    //To change body of overridden methods use File | Settings | File Templates.
         getActivity().bindService(new Intent(getActivity(), IrsshiService.class), mConnection, Context.BIND_AUTO_CREATE);
-        List<TermHost> hosts = IrsshiService.getHosts();
-        setListAdapter(HostListSimpleAdapter.create(getActivity(), hosts));
-        registerForContextMenu(getListView());
     }
 
     @Override
     public void onPause() {
         super.onPause();    //To change body of overridden methods use File | Settings | File Templates.
-        unregisterForContextMenu(getListView());
         if (mBoundService != null) {
             getActivity().unbindService(mConnection);
         }

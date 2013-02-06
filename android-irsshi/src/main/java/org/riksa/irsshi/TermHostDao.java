@@ -11,4 +11,8 @@ import java.util.List;
  */
 public interface TermHostDao {
     List<TermHost> getHosts();
+
+    void addHost(TermHost termHost);
+
+    void removeHost(TermHost termHost);
 }

@@ -30,4 +30,14 @@ public class MockTermHostDao implements TermHostDao {
     public List<TermHost> getHosts() {
         return hosts;
     }
+
+    @Override
+    public void addHost(TermHost termHost) {
+        hosts.add(termHost);
+    }
+
+    @Override
+    public void removeHost(TermHost termHost) {
+        hosts.remove(termHost);
+    }
 }

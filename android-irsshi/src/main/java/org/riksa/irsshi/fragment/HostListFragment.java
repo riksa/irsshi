@@ -14,6 +14,7 @@ import android.widget.Toast;
 import org.riksa.irsshi.IrsshiApplication;
 import org.riksa.irsshi.IrsshiService;
 import org.riksa.irsshi.R;
+import org.riksa.irsshi.TermHostDao;
 import org.riksa.irsshi.domain.LocalTermHost;
 import org.riksa.irsshi.domain.MoshTermHost;
 import org.riksa.irsshi.domain.SshTermHost;
@@ -32,6 +33,7 @@ import java.util.List;
  */
 public class HostListFragment extends ListFragment {
     private static final Logger log = LoggerFactory.getLogger(HostListFragment.class);
+    private TermHostDao termHostDao;
     /*
     private IrsshiService mBoundService;
 
@@ -67,12 +69,13 @@ public class HostListFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);    //To change body of overridden methods use File | Settings | File Templates.
+        termHostDao = IrsshiApplication.getInstance().getTermHostDao();
     }
 
     @Override
     public void onResume() {
         super.onResume();    //To change body of overridden methods use File | Settings | File Templates.
-        List<TermHost> hosts = IrsshiApplication.getInstance().getTermHostDao().getHosts();
+        List<TermHost> hosts = termHostDao.getHosts();
         setListAdapter(HostListSimpleAdapter.create(getActivity(), hosts));
 
         registerForContextMenu(getListView());
@@ -115,8 +118,7 @@ public class HostListFragment extends ListFragment {
 
         switch (item.getItemId()) {
             case R.id.menu_delete:
-                Toast.makeText(getActivity(), "TODO: Delete host " + termHost, Toast.LENGTH_SHORT).show();
-                log.debug("Delete host {}", termHost);
+                termHostDao.removeHost(termHost);
                 break;
             default:
                 log.warn("Unhandled menu item clicked");

@@ -8,6 +8,10 @@ import android.content.Loader;
  * Time: 18:31
  */
 public interface TermHost {
+    void setId(Integer id);
+
+    Integer getId();
+
     public enum HostType {SSH, TERM, MOSH}
 
     HostType getHostType();

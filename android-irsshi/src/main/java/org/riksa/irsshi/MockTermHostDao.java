@@ -1,5 +1,6 @@
 package org.riksa.irsshi;
 
+import android.database.Cursor;
 import org.riksa.irsshi.domain.LocalTermHost;
 import org.riksa.irsshi.domain.MoshTermHost;
 import org.riksa.irsshi.domain.SshTermHost;
@@ -39,5 +40,10 @@ public class MockTermHostDao implements TermHostDao {
     @Override
     public void removeHost(TermHost termHost) {
         hosts.remove(termHost);
+    }
+
+    @Override
+    public Cursor getCursor() {
+        return null;
     }
 }

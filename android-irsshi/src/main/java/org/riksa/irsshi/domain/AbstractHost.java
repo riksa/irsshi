@@ -32,6 +32,9 @@ public abstract class AbstractHost implements TermHost {
     @Override
     public void setHostName(String hostName) {
         this.hostName = hostName;
+        if (getNickName() == null || getNickName().isEmpty()) {
+            setNickName(hostName);
+        }
     }
 
     @Override

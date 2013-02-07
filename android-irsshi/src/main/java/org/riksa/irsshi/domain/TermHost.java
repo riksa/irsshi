@@ -12,6 +12,10 @@ public interface TermHost {
 
     Integer getId();
 
+    void setNickName(String string);
+
+    String getNickName();
+
     public enum HostType {SSH, TERM, MOSH}
 
     HostType getHostType();

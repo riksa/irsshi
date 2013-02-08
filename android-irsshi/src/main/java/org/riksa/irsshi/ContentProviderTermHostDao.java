@@ -87,6 +87,8 @@ public class ContentProviderTermHostDao implements TermHostDao {
 
     @Override
     public int updateHost(TermHost termHost) {
+        assert termHost != null;
+        assert termHost.getId() != null;
         ContentResolver contentResolver = context.getContentResolver();
         Uri uri = ContentUris.withAppendedId(HostProviderMetaData.HostTableMetaData.CONTENT_URI, termHost.getId());
         return contentResolver.update(uri, parseContentValues(termHost), null, null);
@@ -113,8 +115,7 @@ public class ContentProviderTermHostDao implements TermHostDao {
         final int userNameIdx = cursor.getColumnIndex(HostProviderMetaData.HostTableMetaData.USERNAME);
         do {
             String hosttype = cursor.getString(typeIdx);
-            TermHost host = TermHostFactory.create(hosttype);
-            host.setId(cursor.getInt(idIdx));
+            TermHost host = TermHostFactory.create(hosttype, cursor.getInt(idIdx));
             host.setNickName(cursor.getString(nickNameIdx));
             host.setHostName(cursor.getString(hostNameIdx));
             host.setPort(cursor.getInt(portIdx));

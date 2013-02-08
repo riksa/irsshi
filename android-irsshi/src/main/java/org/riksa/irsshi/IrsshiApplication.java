@@ -32,13 +32,12 @@ public class IrsshiApplication extends Application {
 
         Collection<TermHost> mockHosts = new ArrayList<TermHost>();
 
-//        termHostDao = new IrsshiSQLiteOpenHelper(this);
-        mockHosts.add(new SshTermHost("some.host.ssh", "someone"));
-        mockHosts.add(new SshTermHost("another.host.ssh", "someoneelse", 2222));
-        mockHosts.add(new MoshTermHost("some.host.mosh", "foomosh"));
-        mockHosts.add(new MoshTermHost("another.host.mosh", "barmosh", 1111));
-        mockHosts.add(new LocalTermHost());
-        mockHosts.add(new LocalTermHost("android"));
+//        mockHosts.add(new SshTermHost("some.host.ssh", "someone"));
+//        mockHosts.add(new SshTermHost("another.host.ssh", "someoneelse", 2222));
+//        mockHosts.add(new MoshTermHost("some.host.mosh", "foomosh"));
+//        mockHosts.add(new MoshTermHost("another.host.mosh", "barmosh", 1111));
+//        mockHosts.add(new LocalTermHost());
+//        mockHosts.add(new LocalTermHost("android"));
 
         ContentResolver contentResolver = getApplicationContext().getContentResolver();
         for (TermHost termHost : mockHosts) {

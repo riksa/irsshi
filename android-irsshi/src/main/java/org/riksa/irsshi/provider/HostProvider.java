@@ -138,8 +138,29 @@ public class HostProvider extends ContentProvider {
     }
 
     @Override
-    public int update(Uri uri, ContentValues contentValues, String s, String[] strings) {
-        throw new RuntimeException("TODO");
+    public int update(Uri uri, ContentValues contentValues, String where, String[] whereArgs) {
+        SQLiteDatabase db = sqLiteOpenHelper.getWritableDatabase();
+        int count;
+
+        switch (uriMatcher.match(uri)) {
+            case URI_DIR:
+                count = db.update(HostProviderMetaData.HostTableMetaData.TABLE_NAME, contentValues, where, whereArgs);
+                break;
+            case URI_ITEM:
+                String rowId = uri.getPathSegments().get(1);
+                String idWhere = HostProviderMetaData.HostTableMetaData._ID + "=" + rowId;
+                if (!TextUtils.isEmpty(where)) {
+                    idWhere += " AND (" + where + ")";
+                }
+                count = db.update(HostProviderMetaData.HostTableMetaData.TABLE_NAME, contentValues, idWhere, whereArgs);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI " + uri);
+        }
+
+        getContext().getContentResolver().notifyChange(uri, null);
+
+        return count;
     }
 
     private static class HostDbHelper extends SQLiteOpenHelper {

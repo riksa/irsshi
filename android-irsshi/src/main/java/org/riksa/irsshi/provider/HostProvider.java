@@ -112,8 +112,29 @@ public class HostProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(Uri uri, String s, String[] strings) {
-        throw new RuntimeException("TODO");
+    public int delete(Uri uri, String where, String[] whereArgs) {
+        SQLiteDatabase db = sqLiteOpenHelper.getWritableDatabase();
+        int count;
+
+        switch (uriMatcher.match(uri)) {
+            case URI_DIR:
+                count = db.delete(HostProviderMetaData.HostTableMetaData.TABLE_NAME, where, whereArgs);
+                break;
+            case URI_ITEM:
+                String rowId = uri.getPathSegments().get(1);
+                String idWhere = HostProviderMetaData.HostTableMetaData._ID + "=" + rowId;
+                if (!TextUtils.isEmpty(where)) {
+                    idWhere += " AND (" + where + ")";
+                }
+                count = db.delete(HostProviderMetaData.HostTableMetaData.TABLE_NAME, idWhere, whereArgs);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI " + uri);
+        }
+
+        getContext().getContentResolver().notifyChange(uri, null);
+
+        return count;
     }
 
     @Override

@@ -26,6 +26,7 @@ import java.util.Map;
  * Date: 10/18/12
  * Time: 2:59 PM
  */
+/*
 public class HostListSimpleAdapter extends SimpleAdapter {
     private static final Logger log = LoggerFactory.getLogger(HostListSimpleAdapter.class);
     private static final String KEY_TYPE = "type";
@@ -74,3 +75,4 @@ public class HostListSimpleAdapter extends SimpleAdapter {
         return hosts.get(position);
     }
 }
+  */

@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.view.*;
 import android.widget.*;
 import org.riksa.irsshi.R;
-import org.riksa.irsshi.domain.TermHost;
 import org.riksa.irsshi.logger.LoggerFactory;
 import org.riksa.irsshi.provider.HostProviderMetaData;
 import org.slf4j.Logger;
@@ -114,14 +113,15 @@ public class HostListFragment extends ListFragment implements LoaderManager.Load
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        HostListSimpleAdapter adapter = (HostListSimpleAdapter) getListAdapter();
-        AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        TermHost termHost = adapter.getTermHostAtPosition(menuInfo.position);
+//        HostListSimpleAdapter adapter = (HostListSimpleAdapter) getListAdapter();
+//        TermHost termHost = adapter.getTermHostAtPosition(menuInfo.position);
 
         switch (item.getItemId()) {
             case R.id.menu_delete:
+                AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+                long hostId = mAdapter.getItemId(menuInfo.position);
                 ContentResolver contentResolver = getActivity().getContentResolver();
-                Uri uri = ContentUris.withAppendedId(HostProviderMetaData.HostTableMetaData.CONTENT_URI, termHost.getId());
+                Uri uri = ContentUris.withAppendedId(HostProviderMetaData.HostTableMetaData.CONTENT_URI, hostId);
                 int deleted = contentResolver.delete(uri, null, null);
                 log.debug("deleted {} rows", deleted);
                 break;
@@ -147,10 +147,10 @@ public class HostListFragment extends ListFragment implements LoaderManager.Load
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);    //To change body of overridden methods use File | Settings | File Templates.
-        HostListSimpleAdapter adapter = (HostListSimpleAdapter) getListAdapter();
-        TermHost termHost = adapter.getTermHostAtPosition(position);
-        log.debug("Connect to {}", termHost);
-        Toast.makeText(getActivity(), "TODO: Connect to " + termHost, Toast.LENGTH_SHORT).show();
+//        AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        long itemId = mAdapter.getItemId(position);
+        log.debug("Connect to host #{}", itemId);
+        Toast.makeText(getActivity(), "Connect to host #" + itemId, Toast.LENGTH_SHORT).show();
     }
 
     // LoaderManager.LoaderCallbacks<Cursor>

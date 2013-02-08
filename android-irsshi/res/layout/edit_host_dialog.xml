@@ -34,10 +34,12 @@
             <EditText
                 style="@style/dialog_edit"
                 android:hint="@string/hostname_hint"
+                android:inputType="textUri"
                 android:id="@+id/hostname"/>
 
             <EditText
                 style="@style/dialog_edit"
+                android:inputType="number"
                 android:hint="@string/port_hint"
                 android:id="@+id/port"/>
 

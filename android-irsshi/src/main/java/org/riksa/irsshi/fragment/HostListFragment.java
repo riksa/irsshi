@@ -171,6 +171,11 @@ public class HostListFragment extends ListFragment implements LoaderManager.Load
             @Override
             public void onOk(TermHost termHost) {
                 log.debug("onOk {}", termHost);
+                if (termHost.getId() == null) {
+                    termHostDao.insertHost(termHost);
+                } else {
+                    termHostDao.updateHost(termHost);
+                }
             }
         });
         dialogFragment.show(fragmentTransaction, TermHostEditDialog.TAG);

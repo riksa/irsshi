@@ -2,8 +2,6 @@ package org.riksa.irsshi.fragment;
 
 import android.app.ListFragment;
 import android.app.LoaderManager;
-import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
@@ -11,7 +9,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.*;
+import org.riksa.irsshi.IrsshiApplication;
 import org.riksa.irsshi.R;
+import org.riksa.irsshi.TermHostDao;
+import org.riksa.irsshi.domain.TermHost;
 import org.riksa.irsshi.logger.LoggerFactory;
 import org.riksa.irsshi.provider.HostProviderMetaData;
 import org.slf4j.Logger;
@@ -25,6 +26,7 @@ public class HostListFragment extends ListFragment implements LoaderManager.Load
     private static final Logger log = LoggerFactory.getLogger(HostListFragment.class);
     //    private TermHostDao termHostDao;
     private CursorAdapter mAdapter;
+    private TermHostDao termHostDao = IrsshiApplication.getInstance().getTermHostDao();
     /*
     private IrsshiService mBoundService;
 
@@ -116,14 +118,14 @@ public class HostListFragment extends ListFragment implements LoaderManager.Load
 //        HostListSimpleAdapter adapter = (HostListSimpleAdapter) getListAdapter();
 //        TermHost termHost = adapter.getTermHostAtPosition(menuInfo.position);
 
+        AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        long hostId = mAdapter.getItemId(menuInfo.position);
         switch (item.getItemId()) {
             case R.id.menu_delete:
-                AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-                long hostId = mAdapter.getItemId(menuInfo.position);
-                ContentResolver contentResolver = getActivity().getContentResolver();
-                Uri uri = ContentUris.withAppendedId(HostProviderMetaData.HostTableMetaData.CONTENT_URI, hostId);
-                int deleted = contentResolver.delete(uri, null, null);
-                log.debug("deleted {} rows", deleted);
+                termHostDao.deleteHost(hostId);
+                break;
+            case R.id.menu_edit:
+                showEditDialog(hostId);
                 break;
             default:
                 log.warn("Unhandled menu item clicked");
@@ -135,13 +137,37 @@ public class HostListFragment extends ListFragment implements LoaderManager.Load
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_create:
-                log.debug("Add new host");
-                Toast.makeText(getActivity(), "TODO: Add new host", Toast.LENGTH_SHORT).show();
+                showEditDialog(-1);
                 break;
             default:
                 log.warn("Unhandled menu item clicked");
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Show a dialog for creating/editing a TermHost
+     *
+     * @param termId id of a TermHost to edit, or -1 to create a new one
+     */
+    private void showEditDialog(long termId) {
+        if (termId == -1) {
+            log.debug("Create new host");
+        } else {
+            TermHost termHost = termHostDao.findHostById(termId);
+            log.debug("Edit host {}", termHost);
+        }
+        /*
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        Fragment prev = getFragmentManager().findFragmentByTag(TermHostEditDialog.TAG);
+        if (prev != null) {
+            fragmentTransaction.remove(prev);
+        }
+        fragmentTransaction.addToBackStack(null);
+        TermHost termHost = getActivity().getContentResolver().qT
+
+        DialogFragment dialogFragment = TermHostEditDialog.newInstance(termHost);*/
+
     }
 
     @Override

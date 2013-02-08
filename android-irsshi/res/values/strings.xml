@@ -8,6 +8,7 @@
     <string name="menu_import">Import</string>
 
     <!-- context menu items -->
+    <string name="menu_edit">Edit</string>
     <string name="menu_delete">Delete</string>
 
     <!-- fragment_host_list -->

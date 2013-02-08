@@ -1,6 +1,5 @@
 package org.riksa.irsshi;
 
-import android.database.Cursor;
 import org.riksa.irsshi.domain.TermHost;
 
 import java.util.List;
@@ -13,9 +12,13 @@ import java.util.List;
 public interface TermHostDao {
     List<TermHost> getHosts();
 
-    void addHost(TermHost termHost);
+    void insertHost(TermHost termHost);
 
-    void removeHost(TermHost termHost);
+    int deleteHost(long hostId);
 
-    Cursor getCursor();
+    int updateHost(TermHost termHost);
+
+    TermHost findHostById(long hostId);
+
+//    Cursor getCursor();
 }

@@ -14,7 +14,8 @@ import java.util.List;
  * Date: 5.2.2013
  * Time: 23:18
  */
-public class MockTermHostDao implements TermHostDao {
+/*
+public class MockTermHostDao implements TermHostDao {org.riksa.irsshi
     List<TermHost> hosts;
 
     public MockTermHostDao() {
@@ -28,7 +29,7 @@ public class MockTermHostDao implements TermHostDao {
     }
 
     @Override
-    public List<TermHost> getHosts() {
+    public List<TermHost> getHosts(long hostId) {
         return hosts;
     }
 
@@ -46,4 +47,4 @@ public class MockTermHostDao implements TermHostDao {
     public Cursor getCursor() {
         return null;
     }
-}
+} */

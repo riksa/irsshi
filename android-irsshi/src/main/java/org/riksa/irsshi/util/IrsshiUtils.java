@@ -1,6 +1,6 @@
 /*
- * This file is part of A3 - Android Authentication Agent
- * Copyright (c) 2012. riku salkia <riksa@iki.fi>
+ * This file is part of irSSHi - Android SSH client
+ * Copyright (c) 2013. riku salkia <riksa@iki.fi>
  * TODO: License ;)
  */
 

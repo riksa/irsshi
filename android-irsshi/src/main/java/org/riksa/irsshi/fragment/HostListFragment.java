@@ -2,29 +2,20 @@ package org.riksa.irsshi.fragment;
 
 import android.app.ListFragment;
 import android.app.LoaderManager;
-import android.content.*;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.CursorLoader;
+import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.provider.ContactsContract;
 import android.view.*;
 import android.widget.*;
-import org.riksa.irsshi.IrsshiApplication;
-import org.riksa.irsshi.IrsshiService;
 import org.riksa.irsshi.R;
-import org.riksa.irsshi.TermHostDao;
-import org.riksa.irsshi.domain.LocalTermHost;
-import org.riksa.irsshi.domain.MoshTermHost;
-import org.riksa.irsshi.domain.SshTermHost;
 import org.riksa.irsshi.domain.TermHost;
 import org.riksa.irsshi.logger.LoggerFactory;
-import org.riksa.irsshi.provider.IrsshiSQLiteOpenHelper;
+import org.riksa.irsshi.provider.HostProviderMetaData;
 import org.slf4j.Logger;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * User: riksa
@@ -33,7 +24,7 @@ import java.util.List;
  */
 public class HostListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final Logger log = LoggerFactory.getLogger(HostListFragment.class);
-    private TermHostDao termHostDao;
+    //    private TermHostDao termHostDao;
     private CursorAdapter mAdapter;
     /*
     private IrsshiService mBoundService;
@@ -70,7 +61,7 @@ public class HostListFragment extends ListFragment implements LoaderManager.Load
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);    //To change body of overridden methods use File | Settings | File Templates.
-        termHostDao = IrsshiApplication.getInstance().getTermHostDao();
+//        termHostDao = IrsshiApplication.getInstance().getTermHostDao();
     }
 
     @Override
@@ -98,10 +89,9 @@ public class HostListFragment extends ListFragment implements LoaderManager.Load
         super.onActivityCreated(savedInstanceState);    //To change body of overridden methods use File | Settings | File Templates.
         setHasOptionsMenu(true);
 
-        Cursor cursor = termHostDao.getCursor();
         mAdapter = new SimpleCursorAdapter(getActivity(),
-                android.R.layout.simple_list_item_2, cursor,
-                new String[]{IrsshiSQLiteOpenHelper.HOSTS_COLUMNS.NICKNAME, IrsshiSQLiteOpenHelper.HOSTS_COLUMNS.HOSTNAME},
+                android.R.layout.simple_list_item_2, null,
+                new String[]{HostProviderMetaData.HostTableMetaData.HOSTNAME, HostProviderMetaData.HostTableMetaData.PORT},
                 new int[]{android.R.id.text1, android.R.id.text2}, 0);
         setListAdapter(mAdapter);
 
@@ -130,7 +120,10 @@ public class HostListFragment extends ListFragment implements LoaderManager.Load
 
         switch (item.getItemId()) {
             case R.id.menu_delete:
-                termHostDao.removeHost(termHost);
+                ContentResolver contentResolver = getActivity().getContentResolver();
+                Uri uri = ContentUris.withAppendedId(HostProviderMetaData.HostTableMetaData.CONTENT_URI, termHost.getId());
+                int deleted = contentResolver.delete(uri, null, null);
+                log.debug("deleted {} rows", deleted);
                 break;
             default:
                 log.warn("Unhandled menu item clicked");
@@ -163,14 +156,16 @@ public class HostListFragment extends ListFragment implements LoaderManager.Load
     // LoaderManager.LoaderCallbacks<Cursor>
 // http://developer.android.com/reference/android/app/LoaderManager.html
     static final String[] HOSTS_SUMMARY_PROJECTION = new String[]{
-            IrsshiSQLiteOpenHelper.HOSTS_COLUMNS.NICKNAME,
-            IrsshiSQLiteOpenHelper.HOSTS_COLUMNS.HOSTNAME,
+            HostProviderMetaData.HostTableMetaData._ID,
+            HostProviderMetaData.HostTableMetaData.NICKNAME,
+            HostProviderMetaData.HostTableMetaData.HOSTNAME,
+            HostProviderMetaData.HostTableMetaData.PORT,
     };
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         Uri baseUri;
-        baseUri = ContactsContract.Contacts.CONTENT_URI;
+        baseUri = HostProviderMetaData.HostTableMetaData.CONTENT_URI;
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
@@ -178,9 +173,7 @@ public class HostListFragment extends ListFragment implements LoaderManager.Load
 //        ((" + ContactsContract.Contacts.DISPLAY_NAME + " NOTNULL) AND ("
 //                + ContactsContract.Contacts.HAS_PHONE_NUMBER + "=1) AND ("
 //                + ContactsContract.Contacts.DISPLAY_NAME + " != '' ))";
-        return new CursorLoader(getActivity());
-//        return new CursorLoader(getActivity(), baseUri,
-//                HOSTS_SUMMARY_PROJECTION, select, null, null);
+        return new CursorLoader(getActivity(), baseUri, HOSTS_SUMMARY_PROJECTION, select, null, null);
     }
 
     @Override

@@ -12,11 +12,11 @@ public class HostProviderMetaData implements BaseColumns {
     public static final String AUTHORITY = "org.riksa.irsshi.provider.HostProvider";
 
     // Database
-    private static final String DB_NAME = "host.db";
-    private static final int DB_VERSION = 1;
+    public static final String DB_NAME = "host.db";
+    public static final int DB_VERSION = 1;
 
     // Tables
-    private static final String TABLE_HOSTS = "hosts";
+//    public static final String TABLE_HOSTS = "hosts";
 
     private HostProviderMetaData() {
     }
@@ -25,7 +25,7 @@ public class HostProviderMetaData implements BaseColumns {
         private HostTableMetaData() {
         }
 
-        private static final String TABLE_NAME = "hosts";
+        public static final String TABLE_NAME = "hosts";
         public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/hosts");
         public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.irsshi.host";
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.irsshi.host";

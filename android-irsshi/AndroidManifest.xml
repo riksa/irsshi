@@ -18,12 +18,17 @@
         <!--<category android:name="android.intent.category.LAUNCHER"/>-->
         <!--</intent-filter>-->
         <!--</activity>-->
-        <activity android:name=".HostListActivity" android:theme="@style/Theme.Holo">
+        <activity
+            android:name=".HostListActivity"
+            android:theme="@style/Theme.Holo">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <provider
+            android:name=".provider.HostProvider"
+            android:authorities="org.riksa.irsshi.provider.HostProvider"/>
         <service android:name=".IrsshiService"/>
     </application>
 

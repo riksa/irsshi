@@ -1,7 +1,6 @@
 package org.riksa.irsshi.fragment;
 
-import android.app.ListFragment;
-import android.app.LoaderManager;
+import android.app.*;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
@@ -151,22 +150,30 @@ public class HostListFragment extends ListFragment implements LoaderManager.Load
      * @param termId id of a TermHost to edit, or -1 to create a new one
      */
     private void showEditDialog(long termId) {
-        if (termId == -1) {
-            log.debug("Create new host");
-        } else {
-            TermHost termHost = termHostDao.findHostById(termId);
-            log.debug("Edit host {}", termHost);
+        TermHost termHost = null;
+        if (termId != -1) {
+            termHost = termHostDao.findHostById(termId);
         }
-        /*
+
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         Fragment prev = getFragmentManager().findFragmentByTag(TermHostEditDialog.TAG);
         if (prev != null) {
             fragmentTransaction.remove(prev);
         }
         fragmentTransaction.addToBackStack(null);
-        TermHost termHost = getActivity().getContentResolver().qT
 
-        DialogFragment dialogFragment = TermHostEditDialog.newInstance(termHost);*/
+        DialogFragment dialogFragment = TermHostEditDialog.newInstance(termHost, new TermHostEditListener() {
+            @Override
+            public void onCancel() {
+                log.debug("onCancel");
+            }
+
+            @Override
+            public void onOk(TermHost termHost) {
+                log.debug("onOk {}", termHost);
+            }
+        });
+        dialogFragment.show(fragmentTransaction, TermHostEditDialog.TAG);
 
     }
 

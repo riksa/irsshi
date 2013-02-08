@@ -8,16 +8,9 @@ package org.riksa.irsshi.domain;
 public class SshTermHost extends AbstractHost implements TermHost {
     public static final int DEFAULT_SSH_PORT = 22;
 
-    public SshTermHost() {
-        super(null, null, DEFAULT_SSH_PORT);
-    }
-
-    public SshTermHost(String hostName, String userName) {
-        super(hostName, userName, DEFAULT_SSH_PORT);
-    }
-
-    public SshTermHost(String hostName, String userName, int port) {
-        super(hostName, userName, port);
+    public SshTermHost(Integer id) {
+        super(id);
+        setPort(DEFAULT_SSH_PORT);
     }
 
     @Override

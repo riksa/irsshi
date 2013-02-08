@@ -1,21 +1,25 @@
 package org.riksa.irsshi.domain;
 
+import android.text.TextUtils;
+
+import java.util.Collection;
+import java.util.HashSet;
+
 /**
  * User: riksa
  * Date: 2/7/13
  * Time: 11:56 AM
  */
 public abstract class AbstractHost implements TermHost {
-    private Integer id;
+    private final Integer id;
     private String nickName;
     private String hostName;
     private int port;
     private String userName;
+    private final Collection<TermHostValidationError> errors = new HashSet<TermHostValidationError>();
 
-    protected AbstractHost(String hostName, String userName, int port) {
-        this.hostName = hostName;
-        this.port = port;
-        this.userName = userName;
+    public AbstractHost(Integer id) {
+        this.id = id;
     }
 
     @Override
@@ -23,10 +27,6 @@ public abstract class AbstractHost implements TermHost {
 
     public Integer getId() {
         return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     @Override
@@ -75,4 +75,44 @@ public abstract class AbstractHost implements TermHost {
     public void setNickName(String nickName) {
         this.nickName = nickName;
     }
+
+    @Override
+    public boolean validate() {
+        errors.clear();
+        if (!validateNickName()) {
+            errors.add(TermHostValidationError.NICKNAME);
+        }
+        if (!validateHostName()) {
+            errors.add(TermHostValidationError.HOSTNAME);
+        }
+        if (!validatePort()) {
+            errors.add(TermHostValidationError.PORT);
+        }
+        if (!validateUserName()) {
+            errors.add(TermHostValidationError.USERNAME);
+        }
+        return errors.size() == 0;
+    }
+
+    @Override
+    public Collection<TermHostValidationError> getErrors() {
+        return errors;
+    }
+
+    protected boolean validateNickName() {
+        return !TextUtils.isEmpty(nickName);
+    }
+
+    protected boolean validateHostName() {
+        return !TextUtils.isEmpty(hostName);
+    }
+
+    protected boolean validateUserName() {
+        return !TextUtils.isEmpty(userName);
+    }
+
+    protected boolean validatePort() {
+        return port > 0 && port < 65536;
+    }
+
 }

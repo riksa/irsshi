@@ -6,26 +6,26 @@ package org.riksa.irsshi.domain;
  * Time: 11:43 AM
  */
 public class TermHostFactory {
-    public static TermHost create(String hostType) {
+    public static TermHost create(String hostType, Integer id) {
         assert hostType != null;
-        TermHost termHost = create(TermHost.HostType.valueOf(hostType));
+        TermHost termHost = create(TermHost.HostType.valueOf(hostType), id);
         assert hostType.equals(termHost.getHostType().toString());
         return termHost;
     }
 
-    private static TermHost create(TermHost.HostType hostType) {
+    public static TermHost create(TermHost.HostType hostType, Integer id) {
         assert hostType != null;
         TermHost termHost = null;
 
         switch (hostType) {
             case MOSH:
-                termHost = new MoshTermHost();
+                termHost = new MoshTermHost(id);
                 break;
             case SSH:
-                termHost = new MoshTermHost();
+                termHost = new SshTermHost(id);
                 break;
             case TERM:
-                termHost = new MoshTermHost();
+                termHost = new LocalTermHost(id);
                 break;
             default:
                 assert false;

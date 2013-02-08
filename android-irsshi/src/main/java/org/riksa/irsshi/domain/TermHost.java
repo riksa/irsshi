@@ -2,19 +2,28 @@ package org.riksa.irsshi.domain;
 
 import android.content.Loader;
 
+import java.util.Collection;
+
 /**
  * User: riksa
  * Date: 4.2.2013
  * Time: 18:31
  */
 public interface TermHost {
-    void setId(Integer id);
+
+    public enum TermHostValidationError {
+        NICKNAME, HOSTNAME, PORT, USERNAME
+    }
 
     Integer getId();
 
     void setNickName(String string);
 
     String getNickName();
+
+    boolean validate();
+
+    Collection<TermHostValidationError> getErrors();
 
     public enum HostType {SSH, TERM, MOSH}
 

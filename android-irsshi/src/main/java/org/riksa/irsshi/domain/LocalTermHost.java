@@ -9,12 +9,10 @@ public class LocalTermHost extends AbstractHost implements TermHost {
     private static final String TERM_DEFAULT_USER = "root";
     private static final String TERM_DEFAULT_HOST = "localhost";
 
-    public LocalTermHost() {
-        super(TERM_DEFAULT_HOST, TERM_DEFAULT_USER, 0);
-    }
-
-    public LocalTermHost(String userName) {
-        super(TERM_DEFAULT_HOST, userName, 0);
+    public LocalTermHost(Integer id) {
+        super(id);
+        setHostName(TERM_DEFAULT_HOST);
+        setUserName(TERM_DEFAULT_USER);
     }
 
     @Override
@@ -22,4 +20,13 @@ public class LocalTermHost extends AbstractHost implements TermHost {
         return HostType.TERM;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
+    protected boolean validateHostName() {
+        return true;
+    }
+
+    @Override
+    protected boolean validatePort() {
+        return true;
+    }
 }

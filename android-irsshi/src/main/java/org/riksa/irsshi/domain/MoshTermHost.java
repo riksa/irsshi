@@ -8,16 +8,9 @@ package org.riksa.irsshi.domain;
 public class MoshTermHost extends AbstractHost implements TermHost {
     public static final int DEFAULT_MOSH_PORT = 22;
 
-    public MoshTermHost() {
-        super(null, null, DEFAULT_MOSH_PORT);
-    }
-
-    public MoshTermHost(String hostName, String userName) {
-        super(hostName, userName, DEFAULT_MOSH_PORT);
-    }
-
-    public MoshTermHost(String hostName, String userName, int port) {
-        super(hostName, userName, port );
+    public MoshTermHost(Integer id) {
+        super(id);
+        setPort(DEFAULT_MOSH_PORT);
     }
 
     @Override

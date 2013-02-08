@@ -16,6 +16,10 @@
     <!-- edit host dialog -->
     <string name="add_host">Add host</string>
     <string name="edit_host">Edit host</string>
+    <string name="validation_error_hostname">Hostname can not be empty</string>
+    <string name="validation_error_username">Username can not be empty</string>
+    <string name="validation_error_nickname">Nickname can not be empty</string>
+    <string name="validation_error_port">Port has to be between 0 and 65536</string>
 
     <string name="nickname_hint">Nickname</string>
     <string name="username_hint">Username</string>
@@ -24,4 +28,5 @@
 
     <!-- fragment_host_list -->
     <string name="host_list_empty">Add a host</string>
+
 </resources>

@@ -7,16 +7,16 @@
 package org.riksa.irsshi.fragment;
 
 import android.app.*;
+import android.content.Context;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.*;
-import org.riksa.irsshi.IrsshiApplication;
-import org.riksa.irsshi.R;
-import org.riksa.irsshi.TermHostDao;
+import org.riksa.irsshi.*;
 import org.riksa.irsshi.domain.TermHost;
 import org.riksa.irsshi.logger.LoggerFactory;
 import org.riksa.irsshi.provider.HostProviderMetaData;
@@ -32,6 +32,7 @@ public class HostListFragment extends ListFragment implements LoaderManager.Load
     //    private TermHostDao termHostDao;
     private CursorAdapter mAdapter;
     private TermHostDao termHostDao = IrsshiApplication.getInstance().getTermHostDao();
+    private IrsshiServiceConnection serviceConnection = new IrsshiServiceConnection();
     /*
     private IrsshiService mBoundService;
 
@@ -60,7 +61,7 @@ public class HostListFragment extends ListFragment implements LoaderManager.Load
 
 //    @Override
 //    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-//        View view = inflater.inflate(R.layout.fragment_host_list, container, false);
+//        View view = inflater.inflate(R.slayout.fragment_host_list, container, false);
 //        return view;
 //    }
 
@@ -77,7 +78,7 @@ public class HostListFragment extends ListFragment implements LoaderManager.Load
 //        setListAdapter(HostListSimpleAdapter.create(getActivity(), hosts));
 
         registerForContextMenu(getListView());
-//        getActivity().bindService(new Intent(getActivity(), IrsshiService.class), mConnection, Context.BIND_AUTO_CREATE);
+        getActivity().bindService(new Intent(getActivity(), IrsshiService.class), serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -85,9 +86,9 @@ public class HostListFragment extends ListFragment implements LoaderManager.Load
         super.onPause();    //To change body of overridden methods use File | Settings | File Templates.
         unregisterForContextMenu(getListView());
 
-//        if (mBoundService != null) {
-//            getActivity().unbindService(mConnection);
-//        }
+        if (serviceConnection.isBound()) {
+            getActivity().unbindService(serviceConnection);
+        }
     }
 
     @Override
@@ -191,10 +192,14 @@ public class HostListFragment extends ListFragment implements LoaderManager.Load
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);    //To change body of overridden methods use File | Settings | File Templates.
-//        AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        long itemId = mAdapter.getItemId(position);
-        log.debug("Connect to host #{}", itemId);
-        Toast.makeText(getActivity(), "Connect to host #" + itemId, Toast.LENGTH_SHORT).show();
+//        AdapterView.AdapterContextMenuInfo meuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+
+        long hostId = mAdapter.getItemId(position);
+        // TODO: proper fragment handling, start activity for now...
+        serviceConnection.getIrsshiService().connectToHostById( hostId );
+
+        Intent intent = new Intent(getActivity(), TerminalsActivity.class);
+        startActivity(intent);
     }
 
     // LoaderManager.LoaderCallbacks<Cursor>

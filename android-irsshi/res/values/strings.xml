@@ -29,4 +29,12 @@
     <!-- fragment_host_list -->
     <string name="host_list_empty">Add a host</string>
 
+
+    <!-- password prompt dialog -->
+    <string name="dialog_password_message">Enter password</string>
+    <string name="dialog_password_title">Password</string>
+    <string name="dialog_password_ok">Ok</string>
+    <string name="dialog_password_cancel">Cancel</string>
+    <string name="dialog_password_hint">Password</string>
+
 </resources>

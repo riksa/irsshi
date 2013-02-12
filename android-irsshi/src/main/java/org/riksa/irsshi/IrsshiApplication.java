@@ -10,6 +10,7 @@ import android.app.Application;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.net.Uri;
+import android.os.StrictMode;
 import org.riksa.irsshi.domain.LocalTermHost;
 import org.riksa.irsshi.domain.MoshTermHost;
 import org.riksa.irsshi.domain.SshTermHost;
@@ -35,6 +36,10 @@ public class IrsshiApplication extends Application {
     public void onCreate() {
         super.onCreate();    //To change body of overridden methods use File | Settings | File Templates.
         instance = this;
+
+        // nonono
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
         termHostDao = new ContentProviderTermHostDao(getApplicationContext());
         Collection<TermHost> mockHosts = new ArrayList<TermHost>();
@@ -64,6 +69,7 @@ public class IrsshiApplication extends Application {
 
     }
 
+    // TODO: ger rid of this coupling... singleton or something
     public TermHostDao getTermHostDao() {
         return termHostDao;
     }

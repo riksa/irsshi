@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ This file is part of irSSHi - Android SSH client
+  ~ Copyright (c) 2013. riku salkia <riksa@iki.fi>
+  ~ TODO: License ;)
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <fragment
+        class="org.riksa.irsshi.fragment.TerminalTabFragment"
+        android:id="@+id/fragment_terminals"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>

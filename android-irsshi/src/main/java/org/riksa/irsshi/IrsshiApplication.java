@@ -9,6 +9,7 @@ package org.riksa.irsshi;
 import android.app.Application;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.StrictMode;
 import org.riksa.irsshi.domain.LocalTermHost;
@@ -37,35 +38,8 @@ public class IrsshiApplication extends Application {
         super.onCreate();    //To change body of overridden methods use File | Settings | File Templates.
         instance = this;
 
-        // nonono
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-
         termHostDao = new ContentProviderTermHostDao(getApplicationContext());
-        Collection<TermHost> mockHosts = new ArrayList<TermHost>();
-
-//        mockHosts.add(new SshTermHost("some.host.ssh", "someone"));
-//        mockHosts.add(new SshTermHost("another.host.ssh", "someoneelse", 2222));
-//        mockHosts.add(new MoshTermHost("some.host.mosh", "foomosh"));
-//        mockHosts.add(new MoshTermHost("another.host.mosh", "barmosh", 1111));
-//        mockHosts.add(new LocalTermHost());
-//        mockHosts.add(new LocalTermHost("android"));
-
-//        ContentResolver contentResolver = getApplicationContext().getContentResolver();
-        for (TermHost termHost : mockHosts) {
-            termHostDao.insertHost(termHost);
-
-//            ContentValues contentValues = new ContentValues();
-//            contentValues.put(HostProviderMetaData.HostTableMetaData.NICKNAME, termHost.getNickName());
-//            contentValues.put(HostProviderMetaData.HostTableMetaData.HOSTNAME, termHost.getHostName());
-//            contentValues.put(HostProviderMetaData.HostTableMetaData.TYPE, termHost.getHostType().name());
-//            contentValues.put(HostProviderMetaData.HostTableMetaData.PORT, termHost.getPort());
-//            contentValues.put(HostProviderMetaData.HostTableMetaData.USERNAME, termHost.getUserName());
-//
-//            Uri uri = contentResolver.insert(HostProviderMetaData.HostTableMetaData.CONTENT_URI, contentValues);
-//            log.debug("Inserted {}", uri);
-//
-        }
+        startService(new Intent(this, IrsshiService.class));
 
     }
 

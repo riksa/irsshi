@@ -36,30 +36,35 @@ public class IrsshiService extends Service {
     private static final Logger log = LoggerFactory.getLogger(IrsshiService.class);
     private final IBinder mBinder = new LocalBinder();
     private TermHostDao termHostDao = IrsshiApplication.getInstance().getTermHostDao();
+
+    public SessionList getSessions() {
+        return sessions;
+    }
+
     private SessionList sessions = new SessionList();
 
     UserInfo userInfo = new UserInfo() {
         @Override
         public String getPassphrase() {
-            Toast.makeText(getApplicationContext(), "getPassphrase", Toast.LENGTH_LONG).show();
-            return "moro";  //To change body of implemented methods use File | Settings | File Templates.
+//            Toast.makeText(getApplicationContext(), "getPassphrase", Toast.LENGTH_LONG).show();
+            return "irsshi";  //To change body of implemented methods use File | Settings | File Templates.
         }
 
         @Override
         public String getPassword() {
-            Toast.makeText(getApplicationContext(), "getPassword", Toast.LENGTH_LONG).show();
-            return "moro";  //To change body of implemented methods use File | Settings | File Templates.
+//            Toast.makeText(getApplicationContext(), "getPassword", Toast.LENGTH_LONG).show();
+            return "irsshi";  //To change body of implemented methods use File | Settings | File Templates.
         }
 
         @Override
         public boolean promptPassword(String s) {
-            Toast.makeText(getApplicationContext(), "promptPassword", Toast.LENGTH_LONG).show();
+//            Toast.makeText(getApplicationContext(), "promptPassword", Toast.LENGTH_LONG).show();
             return true;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
         @Override
         public boolean promptPassphrase(String s) {
-            Toast.makeText(getApplicationContext(), "promptPassphrase", Toast.LENGTH_LONG).show();
+//            Toast.makeText(getApplicationContext(), "promptPassphrase", Toast.LENGTH_LONG).show();
             return true;
         }
 
@@ -79,6 +84,7 @@ public class IrsshiService extends Service {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         TermSettings termSettings = new TermSettings(getResources(), preferences);
         TermSession session = new SshTermSession(host, userInfo, termSettings);
+        session.setTitle( host.getNickName() );
         sessions.add( session );
     }
 

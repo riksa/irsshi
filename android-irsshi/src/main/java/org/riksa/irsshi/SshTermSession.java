@@ -53,7 +53,7 @@ public class SshTermSession extends TermSession {
                     setTermIn(channel.getInputStream());
 
                     channel.connect();
-                    Thread.sleep(30000);
+                    notifyUpdate();
                 } catch (Exception e) {
                     logger.log(Logger.ERROR, e.getMessage());
                 }

@@ -13,6 +13,9 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
 import jackpal.androidterm.emulatorview.TermSession;
 import jackpal.androidterm.util.SessionList;
@@ -21,6 +24,7 @@ import org.riksa.irsshi.domain.LocalTermHost;
 import org.riksa.irsshi.domain.MoshTermHost;
 import org.riksa.irsshi.domain.SshTermHost;
 import org.riksa.irsshi.domain.TermHost;
+import org.riksa.irsshi.logger.JSchLogger;
 import org.riksa.irsshi.logger.LoggerFactory;
 import org.slf4j.Logger;
 
@@ -80,12 +84,47 @@ public class IrsshiService extends Service {
     };
 
     public void connectToHostById(long hostId) {
-        TermHost host = termHostDao.findHostById(hostId);
+        final TermHost host = termHostDao.findHostById(hostId);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         TermSettings termSettings = new TermSettings(getResources(), preferences);
-        TermSession session = new SshTermSession(host, userInfo, termSettings);
-        session.setTitle( host.getNickName() );
-        sessions.add( session );
+//        TermSession session = new SshTermSession(host, userInfo, termSettings);
+        final TermSession termSession = new TermSession();
+
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                JSchLogger logger = new JSchLogger();
+                JSch.setLogger(logger);
+
+                try {
+                    JSch jsch = new JSch();
+
+                    Session session = jsch.getSession(host.getUserName(), host.getHostName(), host.getPort());
+
+                    // username and password will be given via UserInfo interface.
+                    //            UserInfo ui = new TestUserInfo();
+                    session.setUserInfo(userInfo);
+
+                    session.connect();
+
+                    Channel channel = session.openChannel("shell");
+
+                    //            channel.setInputStream( getTermIn() );
+                    //            channel.setOutputStream( getTermOut() );
+                    termSession.setTermOut(channel.getOutputStream());
+                    termSession.setTermIn(channel.getInputStream());
+
+                    channel.connect();
+//                    notifyUpdate();
+                    termSession.setTitle( host.getNickName() );
+                    sessions.add( termSession );
+                } catch (Exception e) {
+                    logger.log(com.jcraft.jsch.Logger.ERROR, e.getMessage());
+                }
+            }
+        };
+
+        new Thread(runnable).start();
     }
 
     public class LocalBinder extends Binder {

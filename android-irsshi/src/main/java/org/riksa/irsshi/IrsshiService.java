@@ -16,6 +16,7 @@ import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.view.View;
 import android.widget.EditText;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.JSch;
@@ -30,6 +31,7 @@ import org.riksa.irsshi.domain.ConnectionStateChangeListener;
 import org.riksa.irsshi.domain.TermHost;
 import org.riksa.irsshi.logger.JSchLogger;
 import org.riksa.irsshi.logger.LoggerFactory;
+import org.riksa.irsshi.util.IrsshiUtils;
 import org.slf4j.Logger;
 
 import java.util.LinkedList;
@@ -108,25 +110,24 @@ public class IrsshiService extends Service {
                                 handler.post(new Runnable() {
                                     @Override
                                     public void run() {
-                                        final EditText editText = new EditText(activity);
+                                        final View view = activity.getLayoutInflater().inflate( R.layout.dialog_password, null, false );
 //                editText.setInputType( 0 );
                                         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                                         builder.setTitle(R.string.dialog_password_title);
-                                        builder.setView(editText);
+                                        builder.setView( view );
                                         builder.setMessage(s);
                                         DialogInterface.OnClickListener okListener = new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
-                                                log.debug("OK");
                                                 waiting = false;
                                                 ret = true;
+                                                EditText editText = IrsshiUtils.findView(view, EditText.class,  R.id.password );
                                                 password = editText.getText().toString();
                                             }
                                         };
                                         DialogInterface.OnClickListener cancelListener = new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
-                                                log.debug("Cancel");
                                                 waiting = false;
                                                 ret = false;
                                             }
@@ -141,7 +142,6 @@ public class IrsshiService extends Service {
                                 }
                             }
 
-                            log.debug( "Password entered {}", ret);
                             return ret;  //To change body of implemented methods use File | Settings | File Templates.
                         }
 

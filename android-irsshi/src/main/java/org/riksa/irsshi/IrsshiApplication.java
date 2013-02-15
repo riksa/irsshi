@@ -7,10 +7,9 @@
 package org.riksa.irsshi;
 
 import android.app.Application;
-import android.content.ContentResolver;
-import android.content.ContentValues;
-import android.content.Intent;
+import android.content.*;
 import android.net.Uri;
+import android.os.IBinder;
 import android.os.StrictMode;
 import org.riksa.irsshi.domain.LocalTermHost;
 import org.riksa.irsshi.domain.MoshTermHost;
@@ -31,24 +30,32 @@ import java.util.Collection;
 public class IrsshiApplication extends Application {
     private static final Logger log = LoggerFactory.getLogger(IrsshiApplication.class);
     private TermHostDao termHostDao;
-    private static IrsshiApplication instance;
+    private static IrsshiService irsshiService;
+
+    public static IrsshiService getIrsshiService() {
+        return irsshiService;
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();    //To change body of overridden methods use File | Settings | File Templates.
-        instance = this;
 
-        termHostDao = new ContentProviderTermHostDao(getApplicationContext());
+        Intent intent = new Intent(this, IrsshiService.class);
         startService(new Intent(this, IrsshiService.class));
 
+        bindService(new Intent(this, IrsshiService.class), new ServiceConnection() {
+
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                irsshiService = ((IrsshiService.LocalBinder) iBinder).getService();
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+                irsshiService = null;
+            }
+        }, Context.BIND_AUTO_CREATE);
+
     }
 
-    // TODO: ger rid of this coupling... singleton or something
-    public TermHostDao getTermHostDao() {
-        return termHostDao;
-    }
-
-    public static IrsshiApplication getInstance() {
-        return instance;
-    }
 }

@@ -22,6 +22,7 @@ import android.widget.AnalogClock;
 import jackpal.androidterm.emulatorview.TermSession;
 import jackpal.androidterm.emulatorview.UpdateCallback;
 import jackpal.androidterm.util.SessionList;
+import org.riksa.irsshi.domain.TermHost;
 import org.riksa.irsshi.fragment.TerminalTabFragment;
 import org.riksa.irsshi.logger.LoggerFactory;
 import org.slf4j.Logger;
@@ -33,43 +34,11 @@ import org.slf4j.Logger;
  */
 public class TerminalsActivity extends Activity {
     private static final Logger log = LoggerFactory.getLogger(TerminalsActivity.class);
+    public static final String EXTRA_HOST_ID = "host_id";
 
-    @Deprecated
-    public static final String EXTRA_USERNAME = "username";
+//    private Handler handler;
 
-    @Deprecated
-    public static final String EXTRA_HOSTNAME = "hostname";
-
-    @Deprecated
-    public static final String EXTRA_PORT = "port";
-
-    @Deprecated
-    public static final String EXTRA_NICKNAME = "nickname";
-
-    private IrsshiService irsshiService = null;
-    private Handler handler;
-
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            irsshiService = ((IrsshiService.LocalBinder) iBinder).getService();
-            irsshiService.getSessions().addCallback( new UpdateCallback() {
-                @Override
-                public void onUpdate() {
-                    log.debug("onUpdate");
-                    handler.sendEmptyMessage( 1 );
-                }
-            });
-
-            debugUpdateTabs();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            irsshiService = null;
-        }
-    };
-
+    /*
     private void debugUpdateTabs() {
         final ActionBar bar = getActionBar();
         bar.removeAllTabs();
@@ -110,6 +79,50 @@ public class TerminalsActivity extends Activity {
             }
         }
     }
+                  */
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        long hostId = intent.getLongExtra(EXTRA_HOST_ID, -1);
+        log.debug("onCreate {}", hostId);
+        addHostTab(hostId);
+    }
+
+    private void addHostTab(final long hostId) {
+        log.debug("addHostTab {}", hostId);
+        if (hostId != -1) {
+//            IrsshiApplication.getIrsshiService().connectToHostById(this, hostId);
+
+            ActionBar actionBar = getActionBar();
+            TermHost termHost = IrsshiApplication.getIrsshiService().getTermHostDao().findHostById(hostId);
+
+            final String tag = "termHost";
+            final String title = termHost.getNickName();
+            actionBar.addTab(actionBar.newTab()
+                    .setTag(tag)
+                    .setText(title)
+                    .setTabListener(new ActionBar.TabListener() {
+                        @Override
+                        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+                            log.debug("onTabSelected");
+                            Bundle bundle = new Bundle();
+                            bundle.putLong(EXTRA_HOST_ID, hostId);
+                            Fragment fragment = Fragment.instantiate(TerminalsActivity.this, TerminalTabFragment.class.getName(), bundle);
+                            fragmentTransaction.add(android.R.id.content, fragment, tag);
+                        }
+
+                        @Override
+                        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+                            log.debug("onTabUnselected");
+                        }
+
+                        @Override
+                        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+                            log.debug("onTabReselected");
+                        }
+                    }));
+        }
+    }
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,44 +131,10 @@ public class TerminalsActivity extends Activity {
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         bar.setDisplayOptions(0, ActionBar.DISPLAY_SHOW_TITLE);
 
-        handler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-                debugUpdateTabs();
-  /*
-                session.write("Connecting...");
+        long hostId = getIntent().getLongExtra(EXTRA_HOST_ID, -1);
+        log.debug("onCreate {}", hostId);
+        addHostTab(hostId);
 
-                session.setFinishCallback(new TermSession.FinishCallback() {
-                    @Override
-                    public void onSessionFinish(TermSession session) {
-                        log.debug("onSessionFinish");
-                    }
-                });
-                session.setUpdateCallback(new UpdateCallback() {
-                    @Override
-                    public void onUpdate() {
-                    }
-                });
-*/
-            }
-        };
-
-            }
-
-    @Override
-    public void onResume() {
-        super.onResume();    //To change body of overridden methods use File | Settings | File Templates.
-        bindService(new Intent(this, IrsshiService.class), serviceConnection, Context.BIND_AUTO_CREATE);
-        debugUpdateTabs();
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();    //To change body of overridden methods use File | Settings | File Templates.
-
-        if (irsshiService != null) {
-            unbindService(serviceConnection);
-        }
-    }
 }

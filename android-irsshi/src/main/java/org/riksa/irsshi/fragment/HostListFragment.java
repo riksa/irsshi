@@ -31,7 +31,6 @@ public class HostListFragment extends ListFragment implements LoaderManager.Load
     private static final Logger log = LoggerFactory.getLogger(HostListFragment.class);
     //    private TermHostDao termHostDao;
     private CursorAdapter mAdapter;
-    private TermHostDao termHostDao = IrsshiApplication.getInstance().getTermHostDao();
     private IrsshiServiceConnection serviceConnection = new IrsshiServiceConnection();
     /*
     private IrsshiService mBoundService;
@@ -128,6 +127,7 @@ public class HostListFragment extends ListFragment implements LoaderManager.Load
         long hostId = mAdapter.getItemId(menuInfo.position);
         switch (item.getItemId()) {
             case R.id.menu_delete:
+                TermHostDao termHostDao = IrsshiApplication.getIrsshiService().getTermHostDao();
                 termHostDao.deleteHost(hostId);
                 break;
             case R.id.menu_edit:
@@ -159,6 +159,7 @@ public class HostListFragment extends ListFragment implements LoaderManager.Load
     private void showEditDialog(long termId) {
         TermHost termHost = null;
         if (termId != -1) {
+            TermHostDao termHostDao = IrsshiApplication.getIrsshiService().getTermHostDao();
             termHost = termHostDao.findHostById(termId);
         }
 
@@ -178,6 +179,7 @@ public class HostListFragment extends ListFragment implements LoaderManager.Load
             @Override
             public void onOk(TermHost termHost) {
                 log.debug("onOk {}", termHost);
+                TermHostDao termHostDao = IrsshiApplication.getIrsshiService().getTermHostDao();
                 if (termHost.getId() == null) {
                     termHostDao.insertHost(termHost);
                 } else {
@@ -195,10 +197,9 @@ public class HostListFragment extends ListFragment implements LoaderManager.Load
 //        AdapterView.AdapterContextMenuInfo meuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
         long hostId = mAdapter.getItemId(position);
-        // TODO: proper fragment handling, start activity for now...
-        serviceConnection.getIrsshiService().connectToHostById( hostId );
 
         Intent intent = new Intent(getActivity(), TerminalsActivity.class);
+        intent.putExtra( TerminalsActivity.EXTRA_HOST_ID, hostId );
         startActivity(intent);
     }
 

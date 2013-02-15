@@ -26,7 +26,10 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".TerminalsActivity"/>
+        <activity
+            android:name=".TerminalsActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:windowSoftInputMode="stateVisible|adjustResize"/>
 
         <provider
             android:name=".provider.HostProvider"

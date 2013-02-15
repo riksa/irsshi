@@ -37,4 +37,9 @@
     <string name="dialog_password_cancel">Cancel</string>
     <string name="dialog_password_hint">Password</string>
 
+    <!-- TerminalTabFragment -->
+    <string name="connecting">Connecting</string>
+    <string name="disconnected">Disconnected</string>
+    <string name="close_tab">Close tab</string>
+
 </resources>

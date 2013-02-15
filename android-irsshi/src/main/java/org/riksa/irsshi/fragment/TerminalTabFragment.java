@@ -17,20 +17,17 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AnalogClock;
-import android.widget.TabHost;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import com.jcraft.jsch.UserInfo;
 import jackpal.androidterm.TermView;
 import jackpal.androidterm.emulatorview.EmulatorView;
 import jackpal.androidterm.emulatorview.TermSession;
 import jackpal.androidterm.emulatorview.UpdateCallback;
 import jackpal.androidterm.util.TermSettings;
-import org.riksa.irsshi.IrsshiService;
-import org.riksa.irsshi.R;
-import org.riksa.irsshi.SshTermSession;
-import org.riksa.irsshi.TerminalsActivity;
+import org.riksa.irsshi.*;
+import org.riksa.irsshi.domain.ConnectionInfo;
+import org.riksa.irsshi.domain.ConnectionStateChangeListener;
+import org.riksa.irsshi.domain.TermHost;
 import org.riksa.irsshi.logger.LoggerFactory;
 import org.riksa.irsshi.util.IrsshiUtils;
 import org.slf4j.Logger;
@@ -43,41 +40,18 @@ import org.slf4j.Logger;
 public class TerminalTabFragment extends Fragment {
     private static final Logger log = LoggerFactory.getLogger(TerminalTabFragment.class);
 
-    private IrsshiService irsshiService;
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            irsshiService = ((IrsshiService.LocalBinder) iBinder).getService();
-            handler.sendEmptyMessage(-1) ;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            irsshiService = null;
-        }
-    };
 
     EmulatorView termView;
-    private int termIdx;
-    private Handler handler;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        handler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-                TermSession session = irsshiService.getSessions().get(termIdx);
-                termView.attachSession(session);
-            }
-        };
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Bundle bundle = getArguments();
-        termIdx = bundle.getInt("idx", 0);
+        long hostId = bundle.getLong(TerminalsActivity.EXTRA_HOST_ID);
 
         View layout = inflater.inflate(R.layout.fragment_terminal_tab, container, false);
 
@@ -86,26 +60,37 @@ public class TerminalTabFragment extends Fragment {
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
         termView.setDensity(metrics);
 
+        final ViewFlipper viewFlipper = IrsshiUtils.findView( layout, ViewFlipper.class, R.id.view_flipper );
+
+        IrsshiApplication.getIrsshiService().connectToHostById(getActivity(), hostId, new ConnectionStateChangeListener() {
+            @Override
+            public void stateChanged(final ConnectionInfo.HostState hostState, final TermHost termHost, final TermSession session) {
+                getActivity().runOnUiThread( new Runnable() {
+                    @Override
+                    public void run() {
+                        switch (hostState) {
+                            case CONNECTING:
+                                viewFlipper.setDisplayedChild( 0 );
+                                break;
+                            case CONNECTED:
+                                viewFlipper.setDisplayedChild( 1 );
+                                termView.attachSession( session );
+                                break;
+                            case DISCONNECTED:
+                                viewFlipper.setDisplayedChild( 2 );
+                                break;
+                        }
+                    }
+                });
+
+            }
+        });
+
         return layout;
 //        TextView view = new TextView(getActivity());
 //        view.setText(bundle.getString("title", "o hi"));
 //        return view;
 
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();    //To change body of overridden methods use File | Settings | File Templates.
-        getActivity().bindService(new Intent(getActivity(), IrsshiService.class), serviceConnection, Context.BIND_AUTO_CREATE);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();    //To change body of overridden methods use File | Settings | File Templates.
-
-        if (irsshiService != null) {
-            getActivity().unbindService(serviceConnection);
-        }
     }
 
 }

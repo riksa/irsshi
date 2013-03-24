@@ -17,6 +17,8 @@ import java.util.Collection;
  */
 public interface TermHost {
 
+    int getDefaultPort();
+
     public enum TermHostValidationError {
         NICKNAME, HOSTNAME, PORT, USERNAME
     }
@@ -31,7 +33,7 @@ public interface TermHost {
 
     Collection<TermHostValidationError> getErrors();
 
-    public enum HostType {SSH, TERM, MOSH}
+    public enum HostType {SSH, MOSH, LOCAL}
 
     HostType getHostType();
 

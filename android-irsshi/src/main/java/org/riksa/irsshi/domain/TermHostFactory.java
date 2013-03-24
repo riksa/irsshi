@@ -30,7 +30,7 @@ public class TermHostFactory {
             case SSH:
                 termHost = new SshTermHost(id);
                 break;
-            case TERM:
+            case LOCAL:
                 termHost = new LocalTermHost(id);
                 break;
             default:

@@ -9,13 +9,14 @@ package org.riksa.irsshi.fragment;
 import android.app.DialogFragment;
 import android.net.sip.SipErrorCode;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.Spinner;
-import android.widget.TextView;
+import android.widget.*;
 import org.riksa.irsshi.R;
 import org.riksa.irsshi.domain.AbstractHost;
 import org.riksa.irsshi.domain.TermHost;
@@ -30,6 +31,7 @@ import org.slf4j.Logger;
  * Time: 12:56 PM
  */
 public class TermHostEditDialog extends DialogFragment {
+    private int defaultPort = 22;
     private static final Logger log = LoggerFactory.getLogger(TermHostEditDialog.class);
     public static final String TAG = "dialog";
     private TermHostEditListener listener;
@@ -139,6 +141,65 @@ public class TermHostEditDialog extends DialogFragment {
                 c++;
             }
         }
+
+        final EditText nicknameTextView = IrsshiUtils.findView(v, EditText.class, R.id.nickname);
+        final EditText usernameTextView = IrsshiUtils.findView(v, EditText.class, R.id.username);
+        final EditText hostnameTextView = IrsshiUtils.findView(v, EditText.class, R.id.hostname);
+        final EditText portTextView = IrsshiUtils.findView(v, EditText.class, R.id.port);
+
+        Spinner spinner = IrsshiUtils.findView(v, Spinner.class, R.id.spinner);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String hostType = (String) adapterView.getSelectedItem();
+                log.debug("Selected: {}", hostType);
+                TermHost host = TermHostFactory.create(hostType, null);
+                defaultPort = host.getDefaultPort();
+                portTextView.setText(Integer.toString(defaultPort));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+        });
+
+        TextWatcher watcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                StringBuilder sb = new StringBuilder();
+
+                if (!TextUtils.isEmpty(usernameTextView.getText())) {
+                    sb.append(usernameTextView.getText()).append("@");
+                }
+
+                sb.append(hostnameTextView.getText());
+
+                try {
+                    int port = Integer.parseInt(portTextView.getText().toString());
+                    if (port != defaultPort) {
+                        sb.append(":").append(portTextView.getText());
+                    }
+                } catch (NumberFormatException e) {
+                }
+
+                nicknameTextView.setText(sb.toString());
+            }
+        };
+        usernameTextView.addTextChangedListener(watcher);
+        hostnameTextView.addTextChangedListener(watcher);
+        portTextView.addTextChangedListener(watcher);
+
 
         return v;
     }

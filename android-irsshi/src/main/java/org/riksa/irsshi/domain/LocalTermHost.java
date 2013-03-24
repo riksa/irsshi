@@ -12,6 +12,7 @@ package org.riksa.irsshi.domain;
  * Time: 18:31
  */
 public class LocalTermHost extends AbstractHost implements TermHost {
+    private static final int DEFAULT_TELNET_PORT = 23;
     private static final String TERM_DEFAULT_USER = "root";
     private static final String TERM_DEFAULT_HOST = "localhost";
 
@@ -22,8 +23,13 @@ public class LocalTermHost extends AbstractHost implements TermHost {
     }
 
     @Override
+    public int getDefaultPort() {
+        return DEFAULT_TELNET_PORT;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public HostType getHostType() {
-        return HostType.TERM;  //To change body of implemented methods use File | Settings | File Templates.
+        return HostType.LOCAL;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override

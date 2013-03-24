@@ -40,7 +40,6 @@ public class IrsshiApplication extends Application {
     public void onCreate() {
         super.onCreate();    //To change body of overridden methods use File | Settings | File Templates.
 
-        Intent intent = new Intent(this, IrsshiService.class);
         startService(new Intent(this, IrsshiService.class));
 
         bindService(new Intent(this, IrsshiService.class), new ServiceConnection() {
@@ -58,4 +57,7 @@ public class IrsshiApplication extends Application {
 
     }
 
+    public static boolean isFirstLaunch() {
+        return true;
+    }
 }

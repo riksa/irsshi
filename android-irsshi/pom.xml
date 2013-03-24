@@ -36,6 +36,11 @@
             <version>1.0.51</version>
             <type>apklib</type>
         </dependency>
+        <dependency>
+            <groupId>com.madgag</groupId>
+            <artifactId>scprov-jdk15on</artifactId>
+            <version>1.47.0.1</version>
+        </dependency>
 
 
     </dependencies>

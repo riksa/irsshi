@@ -30,6 +30,9 @@
             android:name=".TerminalsActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="stateVisible|adjustResize"/>
+        <activity
+            android:name=".TutorialActivity"
+            android:label="@string/tutorial_label"/>
 
         <provider
             android:name=".provider.HostProvider"
@@ -37,7 +40,8 @@
         <service android:name=".IrsshiService"/>
     </application>
 
-    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
 </manifest>
 

@@ -9,6 +9,7 @@ package org.riksa.irsshi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Service;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,9 +24,9 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
 import jackpal.androidterm.emulatorview.TermSession;
-import jackpal.androidterm.emulatorview.UpdateCallback;
-import jackpal.androidterm.util.SessionList;
 import jackpal.androidterm.util.TermSettings;
+import org.riksa.a3.KeyChain;
+import org.riksa.a3.PromptPasswordCallback;
 import org.riksa.irsshi.domain.ConnectionInfo;
 import org.riksa.irsshi.domain.ConnectionStateChangeListener;
 import org.riksa.irsshi.domain.TermHost;
@@ -34,8 +35,11 @@ import org.riksa.irsshi.logger.LoggerFactory;
 import org.riksa.irsshi.util.IrsshiUtils;
 import org.slf4j.Logger;
 
+import java.io.IOException;
+import java.security.KeyStoreException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 /**
  * User: riksa
@@ -48,6 +52,7 @@ public class IrsshiService extends Service {
     private TermHostDao termHostDao;
     private Handler handler;
     private static final List<ConnectionInfo> connections = new LinkedList<ConnectionInfo>();
+    private KeyChain keyChain;
 
     // TODO: delegate
     public TermHostDao getTermHostDao() {
@@ -70,8 +75,8 @@ public class IrsshiService extends Service {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                final ConnectionInfo connectionInfo = new ConnectionInfo( ConnectionInfo.HostState.CONNECTING, termSession, host, connectionStateChangeListener );
-                connections.add( connectionInfo );
+                final ConnectionInfo connectionInfo = new ConnectionInfo(ConnectionInfo.HostState.CONNECTING, termSession, host, connectionStateChangeListener);
+                connections.add(connectionInfo);
                 JSchLogger logger = new JSchLogger();
                 JSch.setLogger(logger);
 
@@ -110,18 +115,18 @@ public class IrsshiService extends Service {
                                 handler.post(new Runnable() {
                                     @Override
                                     public void run() {
-                                        final View view = activity.getLayoutInflater().inflate( R.layout.dialog_password, null, false );
+                                        final View view = activity.getLayoutInflater().inflate(R.layout.dialog_password, null, false);
 //                editText.setInputType( 0 );
                                         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                                         builder.setTitle(R.string.dialog_password_title);
-                                        builder.setView( view );
+                                        builder.setView(view);
                                         builder.setMessage(s);
                                         DialogInterface.OnClickListener okListener = new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
                                                 waiting = false;
                                                 ret = true;
-                                                EditText editText = IrsshiUtils.findView(view, EditText.class,  R.id.password );
+                                                EditText editText = IrsshiUtils.findView(view, EditText.class, R.id.password);
                                                 password = editText.getText().toString();
                                             }
                                         };
@@ -177,7 +182,7 @@ public class IrsshiService extends Service {
 //                    notifyUpdate();
                     termSession.setTitle(host.getNickName());
                     connectionInfo.setHostState(ConnectionInfo.HostState.CONNECTED);
-                    termSession.setFinishCallback( new TermSession.FinishCallback() {
+                    termSession.setFinishCallback(new TermSession.FinishCallback() {
                         @Override
                         public void onSessionFinish(TermSession session) {
                             connectionInfo.setHostState(ConnectionInfo.HostState.DISCONNECTED);
@@ -210,6 +215,27 @@ public class IrsshiService extends Service {
         log.debug("onCreate");
         handler = new Handler();
         termHostDao = new ContentProviderTermHostDao(this);
+        try {
+            keyChain = new KeyChain(getApplicationContext());
+            if (IrsshiApplication.isFirstLaunch()) {
+                Intent tutorial = new Intent(getBaseContext(), TutorialActivity.class);
+                tutorial.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                getApplication().startActivity(tutorial);
+                PromptPasswordCallback callback = new PromptPasswordCallback() {
+                    @Override
+                    public String getPassword(boolean lock, PasswordType passwordType) {
+                        log.warn("Might want to prompt password from user ;)");
+                        return "foo";
+                    }
+                };
+                keyChain.unlock(callback);
+                keyChain.generateKeyAsync(callback, "default", "RSA", 2048);
+            }
+        } catch (KeyStoreException e) {
+            log.error(e.getMessage());
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
     }
 
     @Override

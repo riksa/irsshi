@@ -11,8 +11,10 @@ import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.*;
+import java.security.cert.CertificateException;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.LinkedList;
@@ -71,7 +73,23 @@ public class KeyChain {
     }
 //            keystore.store(new FileOutputStream(keystoreFile), promptSavePassword.getPassword().toCharArray());
 
-    public void unlock(PromptPasswordCallback callback) throws IOException, KeyStoreException {
+    public boolean init(PromptPasswordCallback callback) throws IOException, KeyStoreException, CertificateException, NoSuchAlgorithmException {
+        if (keystoreFile.exists()) {
+            throw new IOException(keystoreFile.getAbsolutePath());
+        }
+
+        String password = callback.getPassword(true, PromptPasswordCallback.PasswordType.KEYCHAIN);
+        if( password != null ) {
+            final KeyStore.PasswordProtection pp = new KeyStore.PasswordProtection(password.toCharArray());
+            KeyStore.Builder builder = KeyStore.Builder.newInstance(JKS_TYPE, new org.spongycastle.jce.provider.BouncyCastleProvider(), pp);
+            keystore = builder.getKeyStore();
+            keystore.store(new FileOutputStream(keystoreFile), password.toCharArray());
+            return true;
+        }
+        return false;
+    }
+
+    public boolean unlock(PromptPasswordCallback callback) throws IOException, KeyStoreException {
         if (!keystoreFile.exists()) {
             throw new FileNotFoundException(keystoreFile.getAbsolutePath());
         }
@@ -82,14 +100,16 @@ public class KeyChain {
                 final KeyStore.PasswordProtection pp = new KeyStore.PasswordProtection(password.toCharArray());
                 KeyStore.Builder builder = KeyStore.Builder.newInstance(JKS_TYPE, new org.spongycastle.jce.provider.BouncyCastleProvider(), keystoreFile, pp);
                 keystore = builder.getKeyStore();
+                return true;
             }
+
         }
+        return false;
     }
 
     public void lock() {
         keystore = null;
     }
-
 
 
     public void generateKeyAsync(final PromptPasswordCallback passwordCallback, final String keyName, final String keyType, final int keyBits) {

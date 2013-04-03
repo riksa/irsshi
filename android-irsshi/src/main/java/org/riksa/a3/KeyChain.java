@@ -13,6 +13,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.*;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.LinkedList;
 
 /**
  * User: riksa
@@ -35,6 +38,15 @@ public class KeyChain {
 
     static {
         Security.addProvider(new org.spongycastle.jce.provider.BouncyCastleProvider());
+    }
+
+    public Collection<String> aliases() throws KeyStoreException {
+        Enumeration<String> aliases = keystore.aliases();
+        Collection<String> ret = new LinkedList<String>();
+        while (aliases.hasMoreElements()) {
+            ret.add(aliases.nextElement());
+        }
+        return ret;
     }
 
     public enum KeyType {RSA, DSA}

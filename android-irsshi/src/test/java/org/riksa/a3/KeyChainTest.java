@@ -8,10 +8,11 @@ package org.riksa.a3;
 
 import junit.framework.TestCase;
 
-import java.io.*;
-import java.nio.file.FileSystemNotFoundException;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.security.KeyPair;
 import java.security.KeyStoreException;
+import java.util.Collection;
 
 import static org.mockito.Mockito.*;
 
@@ -69,4 +70,19 @@ public class KeyChainTest extends TestCase {
         assertFalse(keyChain.isLocked());
     }
 
+    public void testAliases() throws Exception {
+        PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
+        when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEYCHAIN)).thenReturn("pass");
+        File file = new File("pass.bks");
+        KeyChain keyChain = new KeyChain(file);
+        assertTrue(keyChain.isLocked());
+        keyChain.unlock(prompt);
+        verify(prompt, times(1)).getPassword(false, PromptPasswordCallback.PasswordType.KEYCHAIN);
+        assertFalse(keyChain.isLocked());
+
+        Collection<String> aliases = keyChain.aliases();
+        assertSame(2, aliases.size());
+        assertTrue(aliases.contains("pass"));
+        assertTrue(aliases.contains("nopass"));
+    }
 }

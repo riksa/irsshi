@@ -86,6 +86,12 @@ public class KeyChain {
         }
     }
 
+    public void lock() {
+        keystore = null;
+    }
+
+
+
     public void generateKeyAsync(final PromptPasswordCallback passwordCallback, final String keyName, final String keyType, final int keyBits) {
         throw new RuntimeException("TODO");
     }

@@ -85,4 +85,19 @@ public class KeyChainTest extends TestCase {
         assertTrue(aliases.contains("pass"));
         assertTrue(aliases.contains("nopass"));
     }
+
+    public void testLockFile() throws Exception {
+        PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
+        when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEYCHAIN)).thenReturn("pass");
+        File file = new File("pass.bks");
+        KeyChain keyChain = new KeyChain(file);
+        assertTrue(keyChain.isLocked());
+        keyChain.unlock(prompt);
+        verify(prompt, times(1)).getPassword(false, PromptPasswordCallback.PasswordType.KEYCHAIN);
+        assertFalse(keyChain.isLocked());
+        verifyNoMoreInteractions( prompt );
+        keyChain.lock();
+        assertTrue(keyChain.isLocked());
+    }
+
 }

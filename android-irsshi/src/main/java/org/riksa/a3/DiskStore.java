@@ -6,7 +6,6 @@
 
 package org.riksa.a3;
 
-import android.content.Context;
 import org.riksa.irsshi.logger.LoggerFactory;
 import org.slf4j.Logger;
 
@@ -37,10 +36,8 @@ public class DiskStore implements KeyStoreStore {
         Security.addProvider(new org.spongycastle.jce.provider.BouncyCastleProvider());
     }
 
-    public DiskStore(Context context) {
+    public DiskStore() {
         super();
-//        this.context = context;
-//        keystoreFile = new File(context.getFilesDir(), KEYSTORE_FILE);
         keystoreFile = new File(KEYSTORE_FILE);
     }
 

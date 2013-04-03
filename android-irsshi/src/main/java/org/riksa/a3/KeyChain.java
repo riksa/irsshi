@@ -6,18 +6,13 @@
 
 package org.riksa.a3;
 
-import android.content.Context;
 import org.riksa.irsshi.logger.LoggerFactory;
 import org.slf4j.Logger;
 
-import java.io.IOException;
-import java.security.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 /**
  * User: riksa
@@ -27,13 +22,38 @@ import java.util.concurrent.Executors;
 public class KeyChain {
     private static final Logger log = LoggerFactory.getLogger(KeyChain.class);
 
-    public enum Type {RSA, DSA, UNKNOWN}
+    public enum KeyType {RSA, DSA}
 
-    private Collection<KeyChainListener> listeners = new HashSet<KeyChainListener>();
-    private ExecutorService executorService;
-    private KeyStoreStore keystoreStore;
-    private ArrayList<A3Key> unfinishedKeys = new ArrayList<A3Key>();
+    //    private Collection<KeyChainListener> listeners = new HashSet<KeyChainListener>();
+//    private ExecutorService executorService;
+//    private KeyStoreStore keystoreStore;
+//    private ArrayList<A3Key> unfinishedKeys = new ArrayList<A3Key>();
 
+    public KeyPair generateKey(final KeyType keyType, final int keyBits) {
+        try {
+            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(keyType.name());
+            keyPairGenerator.initialize(keyBits, new SecureRandom());
+            KeyPair keyPair = keyPairGenerator.genKeyPair();
+            log.debug("Public key format {}", keyPair.getPublic().getFormat());
+            log.debug("Private key format {}", keyPair.getPrivate().getFormat());
+            return keyPair;
+        } catch (NoSuchAlgorithmException e) {
+            log.error(e.getMessage(), e);
+            return null;
+        }
+    }
+
+    public void unlock(PromptPasswordCallback callback) {
+        throw new RuntimeException("TODO");
+    }
+
+    public void generateKeyAsync(final PromptPasswordCallback passwordCallback, final String keyName, final String keyType, final int keyBits) {
+        throw new RuntimeException("TODO");
+    }
+
+
+
+    /*
     public KeyChain(final Context context) throws KeyStoreException {
         keystoreStore = new DiskStore(context);
     }
@@ -63,50 +83,6 @@ public class KeyChain {
     public boolean isLocked() {
         return keystoreStore.isLocked();
     }
-
-    /*
-private class KeyDefinition {
-String keyName;
-String keyType;
-int keyBits;
-
-private KeyDefinition(String keyName, String keyType, int keyBits) {
-this.keyName = keyName;
-this.keyType = keyType;
-this.keyBits = keyBits;
-}
-}
-    */
-    /*
-    private class KeyGeneratorTask extends AsyncTask<KeyDefinition, Void, Void> {
-
-        @Override
-        protected Void doInBackground(KeyDefinition... keyDefinitions) {
-            for (KeyDefinition keyDefinition : keyDefinitions) {
-                A3Key key = new A3Key(keyDefinition.keyName, null);
-                addKey(key);
-                try {
-
-                    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(keyDefinition.keyType);
-                    keyPairGenerator.initialize(keyDefinition.keyBits, new SecureRandom());
-                    KeyPair keyPair = keyPairGenerator.genKeyPair();
-                    key.setKeyPair(keyPair);
-                    log.debug("Public key format {}", keyPair.getPublic().getFormat());
-                    log.debug("Private key format {}", keyPair.getPrivate().getFormat());
-
-                } catch (NoSuchAlgorithmException e) {
-                    log.error(e.getMessage(), e);
-                    removeKey(key);
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            notifyKeysChanged();
-        }
-    }             */
 
     public void generateKeyAsync(final PromptPasswordCallback passwordCallback, final String keyName, final String keyType, final int keyBits) {
         ExecutorService executorService = getExecutorService();
@@ -238,4 +214,6 @@ this.keyBits = keyBits;
             return false;  //To change body of implemented methods use File | Settings | File Templates.
         }
     }
+
+    */
 }

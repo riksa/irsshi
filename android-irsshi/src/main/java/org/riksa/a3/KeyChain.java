@@ -9,10 +9,10 @@ package org.riksa.a3;
 import org.riksa.irsshi.logger.LoggerFactory;
 import org.slf4j.Logger;
 
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.security.*;
 
 /**
  * User: riksa
@@ -20,7 +20,22 @@ import java.security.SecureRandom;
  * Time: 18:33
  */
 public class KeyChain {
+    private static final String JKS_TYPE = "BKS";
     private static final Logger log = LoggerFactory.getLogger(KeyChain.class);
+    private final File keystoreFile;
+    private KeyStore keystore;
+
+    public KeyChain(File keystoreFile) {
+        this.keystoreFile = keystoreFile;
+    }
+
+    public boolean isLocked() {
+        return keystore == null;
+    }
+
+    static {
+        Security.addProvider(new org.spongycastle.jce.provider.BouncyCastleProvider());
+    }
 
     public enum KeyType {RSA, DSA}
 
@@ -29,7 +44,7 @@ public class KeyChain {
 //    private KeyStoreStore keystoreStore;
 //    private ArrayList<A3Key> unfinishedKeys = new ArrayList<A3Key>();
 
-    public KeyPair generateKey(final KeyType keyType, final int keyBits) {
+    public static KeyPair generateKey(final KeyType keyType, final int keyBits) {
         try {
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(keyType.name());
             keyPairGenerator.initialize(keyBits, new SecureRandom());
@@ -42,9 +57,21 @@ public class KeyChain {
             return null;
         }
     }
+//            keystore.store(new FileOutputStream(keystoreFile), promptSavePassword.getPassword().toCharArray());
 
-    public void unlock(PromptPasswordCallback callback) {
-        throw new RuntimeException("TODO");
+    public void unlock(PromptPasswordCallback callback) throws IOException, KeyStoreException {
+        if (!keystoreFile.exists()) {
+            throw new FileNotFoundException(keystoreFile.getAbsolutePath());
+        }
+
+        if (isLocked()) {
+            String password = callback.getPassword(false, PromptPasswordCallback.PasswordType.KEYCHAIN);
+            if (password != null) {
+                final KeyStore.PasswordProtection pp = new KeyStore.PasswordProtection(password.toCharArray());
+                KeyStore.Builder builder = KeyStore.Builder.newInstance(JKS_TYPE, new org.spongycastle.jce.provider.BouncyCastleProvider(), keystoreFile, pp);
+                keystore = builder.getKeyStore();
+            }
+        }
     }
 
     public void generateKeyAsync(final PromptPasswordCallback passwordCallback, final String keyName, final String keyType, final int keyBits) {

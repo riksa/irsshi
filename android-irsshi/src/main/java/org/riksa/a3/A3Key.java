@@ -12,13 +12,13 @@ package org.riksa.a3;
  * Time: 2:55 PM
  */
 
-public interface A3Key {
-    public enum Type {RSA, DSA, UNKNOWN};
-
-    public String getAlias();
-    public Type getKeyType();
-    public int getKeyStrength();
-    public boolean isLocked();
-    public boolean lock();
-    public boolean unlock(char[] password);
-}
+//public interface A3Key {
+//    public enum Type {RSA, DSA, UNKNOWN};
+//
+//    public String getAlias();
+//    public Type getKeyType();
+//    public int getKeyStrength();
+//    public boolean isLocked();
+//    public boolean lock();
+//    public boolean unlock(char[] password);
+//}

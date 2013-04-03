@@ -215,21 +215,21 @@ public class IrsshiService extends Service {
         log.debug("onCreate");
         handler = new Handler();
         termHostDao = new ContentProviderTermHostDao(this);
-        keyChain = new KeyChain();
-        if (IrsshiApplication.isFirstLaunch()) {
-            Intent tutorial = new Intent(getBaseContext(), TutorialActivity.class);
-            tutorial.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            getApplication().startActivity(tutorial);
-            PromptPasswordCallback callback = new PromptPasswordCallback() {
-                @Override
-                public String getPassword(boolean lock, PasswordType passwordType) {
-                    log.warn("Might want to prompt password from user ;)");
-                    return "foo";
-                }
-            };
-            keyChain.unlock(callback);
-            keyChain.generateKeyAsync(callback, "default", "RSA", 2048);
-        }
+        throw new RuntimeException("TODO");
+//        keyChain = new KeyChain(null);
+//        if (IrsshiApplication.isFirstLaunch()) {
+//            Intent tutorial = new Intent(getBaseContext(), TutorialActivity.class);
+//            tutorial.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            getApplication().startActivity(tutorial);
+//            PromptPasswordCallback callback = new PromptPasswordCallback() {
+//                @Override
+//                public String getPassword(boolean lock, PasswordType passwordType) {
+//                    log.warn("Might want to prompt password from user ;)");
+//                    return "foo";
+//                }
+//            };
+//            keyChain.generateKeyAsync(callback, "default", "RSA", 2048);
+//        }
     }
 
     @Override

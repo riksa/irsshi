@@ -24,7 +24,6 @@ import static org.mockito.Mockito.*;
  * Time: 21:09
  */
 public class KeyChainTest extends TestCase {
-    final File newFile = new File("new.bks");
     final File passFile = findFile("pass.bks");
     private KeyChain passKeyChain;
 
@@ -133,8 +132,9 @@ public class KeyChainTest extends TestCase {
     }
 
     public void testInit() throws Exception {
+        File newFile = File.createTempFile("irsshi", null);
         newFile.delete();
-        assertFalse(newFile.exists());
+        newFile.deleteOnExit();
         KeyChain keyChain = new KeyChain(newFile);
         PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
         when(prompt.getPassword(true, PromptPasswordCallback.PasswordType.KEYCHAIN)).thenReturn("pass");
@@ -146,8 +146,9 @@ public class KeyChainTest extends TestCase {
     }
 
     public void testInitCancel() throws Exception {
+        File newFile = File.createTempFile("irsshi", null);
         newFile.delete();
-        assertFalse(newFile.exists());
+        newFile.deleteOnExit();
         KeyChain keyChain = new KeyChain(newFile);
         PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
         when(prompt.getPassword(true, PromptPasswordCallback.PasswordType.KEYCHAIN)).thenReturn(null);

@@ -11,7 +11,6 @@ import junit.framework.TestCase;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URL;
 import java.security.KeyPair;
 import java.security.KeyStoreException;
 import java.util.Collection;
@@ -24,13 +23,23 @@ import static org.mockito.Mockito.*;
  * Time: 21:09
  */
 public class KeyChainTest extends TestCase {
+    public static final String KEYCHAIN_PASS = "pass";
+    public static final String KEY_PASS = "pass";
     final File passFile = findFile("pass.bks");
-    private KeyChain passKeyChain;
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();    //To change body of overridden methods use File | Settings | File Templates.
-        passKeyChain = new KeyChain(passFile);
+    private KeyChain getUnlockedKeyChain() throws IOException, KeyStoreException {
+        PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
+        when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEYCHAIN)).thenReturn(KEYCHAIN_PASS);
+        KeyChain keyChain = getLockedKeyChain();
+        keyChain.unlock(prompt);
+        assertFalse(keyChain.isLocked());
+        return keyChain;
+    }
+
+    private KeyChain getLockedKeyChain() {
+        KeyChain keyChain = new KeyChain(passFile);
+        assertTrue(keyChain.isLocked());
+        return keyChain;
     }
 
     public File findFile(String name) {
@@ -75,7 +84,8 @@ public class KeyChainTest extends TestCase {
 
     public void testUnlockFile() throws Exception {
         PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
-        when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEYCHAIN)).thenReturn("pass");
+        when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEYCHAIN)).thenReturn(KEYCHAIN_PASS);
+        KeyChain passKeyChain = new KeyChain(passFile);
         assertTrue(passKeyChain.isLocked());
         assertTrue(passKeyChain.unlock(prompt));
         verify(prompt, times(1)).getPassword(false, PromptPasswordCallback.PasswordType.KEYCHAIN);
@@ -85,6 +95,7 @@ public class KeyChainTest extends TestCase {
     public void testUnlockFileCancel() throws Exception {
         PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
         when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEYCHAIN)).thenReturn(null);
+        KeyChain passKeyChain = new KeyChain(passFile);
         assertTrue(passKeyChain.isLocked());
         assertFalse(passKeyChain.unlock(prompt));
         assertTrue(passKeyChain.isLocked());
@@ -93,7 +104,7 @@ public class KeyChainTest extends TestCase {
 
     public void testAliases() throws Exception {
         PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
-        when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEYCHAIN)).thenReturn("pass");
+        when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEYCHAIN)).thenReturn(KEYCHAIN_PASS);
         KeyChain keyChain = new KeyChain(passFile);
         assertTrue(keyChain.isLocked());
         keyChain.unlock(prompt);
@@ -107,15 +118,10 @@ public class KeyChainTest extends TestCase {
     }
 
     public void testLockFile() throws Exception {
-        PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
-        when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEYCHAIN)).thenReturn("pass");
-        assertTrue(passKeyChain.isLocked());
-        passKeyChain.unlock(prompt);
-        verify(prompt, times(1)).getPassword(false, PromptPasswordCallback.PasswordType.KEYCHAIN);
-        assertFalse(passKeyChain.isLocked());
-        verifyNoMoreInteractions(prompt);
-        passKeyChain.lock();
-        assertTrue(passKeyChain.isLocked());
+        KeyChain keyChain = getUnlockedKeyChain();
+        assertFalse(keyChain.isLocked());
+        keyChain.lock();
+        assertTrue(keyChain.isLocked());
     }
 
     public void testInitExisting() throws Exception {
@@ -132,12 +138,13 @@ public class KeyChainTest extends TestCase {
     }
 
     public void testInit() throws Exception {
+        PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
+        when(prompt.getPassword(true, PromptPasswordCallback.PasswordType.KEYCHAIN)).thenReturn(KEYCHAIN_PASS);
+
         File newFile = File.createTempFile("irsshi", null);
         newFile.delete();
         newFile.deleteOnExit();
         KeyChain keyChain = new KeyChain(newFile);
-        PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
-        when(prompt.getPassword(true, PromptPasswordCallback.PasswordType.KEYCHAIN)).thenReturn("pass");
         assertTrue(keyChain.init(prompt));
         verify(prompt, times(1)).getPassword(true, PromptPasswordCallback.PasswordType.KEYCHAIN);
         assertTrue(newFile.exists());
@@ -158,8 +165,76 @@ public class KeyChainTest extends TestCase {
         newFile.delete();
     }
 
-    public void testStoreKey() throws Exception {
+    public void testGetKeyPairLocked() throws Exception {
+        PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
+        verifyZeroInteractions(prompt);
+        KeyChain lockedKeyChain = getLockedKeyChain();
 
+        try {
+            lockedKeyChain.getKeyPair("pass", prompt );
+            fail();
+        } catch (KeyStoreLockedException e) {
+        }
     }
+
+    public void testGetKeyPairCanceled() throws Exception {
+        KeyChain keyChain = getUnlockedKeyChain();
+
+        PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
+        when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEY)).thenReturn(null);
+        try {
+            keyChain.getKeyPair("pass", prompt);
+            fail();
+        } catch (KeyLockedException e) {
+        }
+    }
+
+    public void testGetKeyPairWrongPassword() throws Exception {
+        PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
+        when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEYCHAIN)).thenReturn(KEYCHAIN_PASS);
+
+        KeyChain unlockedKeyChain = getUnlockedKeyChain();
+        when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEY)).thenReturn("wrong");
+        try {
+            unlockedKeyChain.getKeyPair("pass", prompt);
+            fail();
+        } catch (KeyLockedException e) {
+        }
+    }
+
+    public void testGetKeyPairPass() throws Exception {
+        PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
+        when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEY)).thenReturn(KEY_PASS);
+
+        KeyChain unlockedKeyChain = getUnlockedKeyChain();
+        KeyPair keyPair = unlockedKeyChain.getKeyPair("pass", prompt);
+        verify(prompt, times(1)).getPassword(false, PromptPasswordCallback.PasswordType.KEY);
+        assertEquals("RSA", keyPair.getPublic().getAlgorithm());
+    }
+
+    public void testStoreKey() throws Exception {
+        PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
+        when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEYCHAIN)).thenReturn(KEYCHAIN_PASS);
+        when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEY)).thenReturn(KEY_PASS);
+
+        File newFile = File.createTempFile("irsshi", null);
+        newFile.delete();
+        newFile.deleteOnExit();
+        KeyChain keyChain = new KeyChain(newFile);
+        assertTrue(keyChain.init(prompt));
+        verify(prompt, times(1)).getPassword(true, PromptPasswordCallback.PasswordType.KEYCHAIN);
+        assertTrue(newFile.exists());
+
+        KeyPair keyPair = KeyChain.generateKey(KeyChain.KeyType.RSA, 512);
+        keyChain.store( "alias", keyPair );
+
+        Collection<String> aliases = keyChain.aliases();
+        assertSame(1, aliases.size());
+        assertTrue(aliases.contains("alias"));
+
+        newFile.delete();
+        assertFalse(newFile.exists());
+    }
+
 
 }

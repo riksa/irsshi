@@ -51,6 +51,26 @@ public class KeyChain {
         return ret;
     }
 
+    public void store(String alias, KeyPair keyPair) {
+
+    }
+
+    public KeyPair getKeyPair(String alias, PromptPasswordCallback callback) throws KeyStoreLockedException, KeyLockedException, UnrecoverableEntryException, NoSuchAlgorithmException, KeyStoreException {
+        if (isLocked()) {
+            throw new KeyStoreLockedException();
+        }
+
+        String password = callback.getPassword(true, PromptPasswordCallback.PasswordType.KEYCHAIN);
+        if (password == null) {
+            throw new KeyLockedException();
+        }
+
+        final KeyStore.PasswordProtection pp = new KeyStore.PasswordProtection(password.toCharArray());
+        KeyStore.Entry entry = keystore.getEntry(alias, pp);
+        log.debug("class={}", entry.getClass());
+        return null;
+    }
+
     public enum KeyType {RSA, DSA}
 
     //    private Collection<KeyChainListener> listeners = new HashSet<KeyChainListener>();
@@ -79,7 +99,7 @@ public class KeyChain {
         }
 
         String password = callback.getPassword(true, PromptPasswordCallback.PasswordType.KEYCHAIN);
-        if( password != null ) {
+        if (password != null) {
             final KeyStore.PasswordProtection pp = new KeyStore.PasswordProtection(password.toCharArray());
             KeyStore.Builder builder = KeyStore.Builder.newInstance(JKS_TYPE, new org.spongycastle.jce.provider.BouncyCastleProvider(), pp);
             keystore = builder.getKeyStore();

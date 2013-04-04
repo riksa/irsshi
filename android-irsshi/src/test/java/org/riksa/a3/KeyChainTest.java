@@ -7,12 +7,15 @@
 package org.riksa.a3;
 
 import junit.framework.TestCase;
+import org.riksa.irsshi.logger.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.KeyPair;
 import java.security.KeyStoreException;
+import java.security.UnrecoverableKeyException;
 import java.util.Collection;
 
 import static org.mockito.Mockito.*;
@@ -23,6 +26,7 @@ import static org.mockito.Mockito.*;
  * Time: 21:09
  */
 public class KeyChainTest extends TestCase {
+    private static final Logger log = LoggerFactory.getLogger( KeyChainTest.class );
     public static final String KEYCHAIN_PASS = "pass";
     public static final String KEY_PASS = "pass";
     final File passFile = findFile("pass.bks");
@@ -103,15 +107,19 @@ public class KeyChainTest extends TestCase {
     }
 
     public void testAliases() throws Exception {
-        PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
-        when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEYCHAIN)).thenReturn(KEYCHAIN_PASS);
-        KeyChain keyChain = new KeyChain(passFile);
-        assertTrue(keyChain.isLocked());
-        keyChain.unlock(prompt);
-        verify(prompt, times(1)).getPassword(false, PromptPasswordCallback.PasswordType.KEYCHAIN);
-        assertFalse(keyChain.isLocked());
+//        PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
+//        when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEYCHAIN)).thenReturn(KEYCHAIN_PASS);
+//        KeyChain keyChain = new KeyChain(passFile);
+//        assertTrue(keyChain.isLocked());
+//        keyChain.unlock(prompt);
+//        verify(prompt, times(1)).getPassword(false, PromptPasswordCallback.PasswordType.KEYCHAIN);
+//        assertFalse(keyChain.isLocked());
+        KeyChain unlockedKeyChain = getUnlockedKeyChain();
 
-        Collection<String> aliases = keyChain.aliases();
+        Collection<String> aliases = unlockedKeyChain.aliases();
+        for( String alias : aliases ) {
+            log.debug( "key alias={}", alias );
+        }
         assertSame(2, aliases.size());
         assertTrue(aliases.contains("pass"));
         assertTrue(aliases.contains("nopass"));
@@ -171,7 +179,7 @@ public class KeyChainTest extends TestCase {
         KeyChain lockedKeyChain = getLockedKeyChain();
 
         try {
-            lockedKeyChain.getKeyPair("pass", prompt );
+            lockedKeyChain.getKeyPair("pass", prompt);
             fail();
         } catch (KeyStoreLockedException e) {
         }
@@ -185,7 +193,7 @@ public class KeyChainTest extends TestCase {
         try {
             keyChain.getKeyPair("pass", prompt);
             fail();
-        } catch (KeyLockedException e) {
+        } catch (UnrecoverableKeyException e) {
         }
     }
 
@@ -198,7 +206,7 @@ public class KeyChainTest extends TestCase {
         try {
             unlockedKeyChain.getKeyPair("pass", prompt);
             fail();
-        } catch (KeyLockedException e) {
+        } catch (UnrecoverableKeyException e) {
         }
     }
 
@@ -207,12 +215,16 @@ public class KeyChainTest extends TestCase {
         when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEY)).thenReturn(KEY_PASS);
 
         KeyChain unlockedKeyChain = getUnlockedKeyChain();
-        KeyPair keyPair = unlockedKeyChain.getKeyPair("pass", prompt);
+        Collection<String> aliases = unlockedKeyChain.aliases();
+        for( String alias : aliases ) {
+            log.debug( "key alias={}", alias );
+        }
+        KeyPair keyPair = unlockedKeyChain.getKeyPair("rsa2048-password", prompt);
         verify(prompt, times(1)).getPassword(false, PromptPasswordCallback.PasswordType.KEY);
         assertEquals("RSA", keyPair.getPublic().getAlgorithm());
     }
 
-    public void testStoreKey() throws Exception {
+    public void testStoreKeyPass() throws Exception {
         PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
         when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEYCHAIN)).thenReturn(KEYCHAIN_PASS);
         when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEY)).thenReturn(KEY_PASS);
@@ -226,7 +238,7 @@ public class KeyChainTest extends TestCase {
         assertTrue(newFile.exists());
 
         KeyPair keyPair = KeyChain.generateKey(KeyChain.KeyType.RSA, 512);
-        keyChain.store( "alias", keyPair );
+        keyChain.store("alias", keyPair, prompt);
 
         Collection<String> aliases = keyChain.aliases();
         assertSame(1, aliases.size());

@@ -197,56 +197,56 @@ public class KeyChainTest extends TestCase {
         }
     }
 
-    public void testGetKeyPairWrongPassword() throws Exception {
-        PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
-        when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEYCHAIN)).thenReturn(KEYCHAIN_PASS);
+//    public void testGetKeyPairWrongPassword() throws Exception {
+//        PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
+//        when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEYCHAIN)).thenReturn(KEYCHAIN_PASS);
+//
+//        KeyChain unlockedKeyChain = getUnlockedKeyChain();
+//        when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEY)).thenReturn("wrong");
+//        try {
+//            unlockedKeyChain.getKeyPair("pass", prompt);
+//            fail();
+//        } catch (UnrecoverableKeyException e) {
+//        }
+//    }
 
-        KeyChain unlockedKeyChain = getUnlockedKeyChain();
-        when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEY)).thenReturn("wrong");
-        try {
-            unlockedKeyChain.getKeyPair("pass", prompt);
-            fail();
-        } catch (UnrecoverableKeyException e) {
-        }
-    }
+//    public void testGetKeyPairPass() throws Exception {
+//        PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
+//        when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEY)).thenReturn(KEY_PASS);
+//
+//        KeyChain unlockedKeyChain = getUnlockedKeyChain();
+//        Collection<String> aliases = unlockedKeyChain.aliases();
+//        for( String alias : aliases ) {
+//            log.debug( "key alias={}", alias );
+//        }
+//        KeyPair keyPair = unlockedKeyChain.getKeyPair("rsa2048-password", prompt);
+//        verify(prompt, times(1)).getPassword(false, PromptPasswordCallback.PasswordType.KEY);
+//        assertEquals("RSA", keyPair.getPublic().getAlgorithm());
+//    }
 
-    public void testGetKeyPairPass() throws Exception {
-        PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
-        when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEY)).thenReturn(KEY_PASS);
-
-        KeyChain unlockedKeyChain = getUnlockedKeyChain();
-        Collection<String> aliases = unlockedKeyChain.aliases();
-        for( String alias : aliases ) {
-            log.debug( "key alias={}", alias );
-        }
-        KeyPair keyPair = unlockedKeyChain.getKeyPair("rsa2048-password", prompt);
-        verify(prompt, times(1)).getPassword(false, PromptPasswordCallback.PasswordType.KEY);
-        assertEquals("RSA", keyPair.getPublic().getAlgorithm());
-    }
-
-    public void testStoreKeyPass() throws Exception {
-        PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
-        when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEYCHAIN)).thenReturn(KEYCHAIN_PASS);
-        when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEY)).thenReturn(KEY_PASS);
-
-        File newFile = File.createTempFile("irsshi", null);
-        newFile.delete();
-        newFile.deleteOnExit();
-        KeyChain keyChain = new KeyChain(newFile);
-        assertTrue(keyChain.init(prompt));
-        verify(prompt, times(1)).getPassword(true, PromptPasswordCallback.PasswordType.KEYCHAIN);
-        assertTrue(newFile.exists());
-
-        KeyPair keyPair = KeyChain.generateKey(KeyChain.KeyType.RSA, 512);
-        keyChain.store("alias", keyPair, prompt);
-
-        Collection<String> aliases = keyChain.aliases();
-        assertSame(1, aliases.size());
-        assertTrue(aliases.contains("alias"));
-
-        newFile.delete();
-        assertFalse(newFile.exists());
-    }
+//    public void testStoreKeyPass() throws Exception {
+//        PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
+//        when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEYCHAIN)).thenReturn(KEYCHAIN_PASS);
+//        when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEY)).thenReturn(KEY_PASS);
+//
+//        File newFile = File.createTempFile("irsshi", null);
+//        newFile.delete();
+//        newFile.deleteOnExit();
+//        KeyChain keyChain = new KeyChain(newFile);
+//        assertTrue(keyChain.init(prompt));
+//        verify(prompt, times(1)).getPassword(true, PromptPasswordCallback.PasswordType.KEYCHAIN);
+//        assertTrue(newFile.exists());
+//
+//        KeyPair keyPair = KeyChain.generateKey(KeyChain.KeyType.RSA, 512);
+//        keyChain.store("alias", keyPair, prompt);
+//
+//        Collection<String> aliases = keyChain.aliases();
+//        assertSame(1, aliases.size());
+//        assertTrue(aliases.contains("alias"));
+//
+//        newFile.delete();
+//        assertFalse(newFile.exists());
+//    }
 
 
 }

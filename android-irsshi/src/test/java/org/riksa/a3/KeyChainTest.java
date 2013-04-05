@@ -47,6 +47,7 @@ public class KeyChainTest extends TestCase {
     }
 
     public File findFile(String name) {
+
         return new File(name);
     }
 

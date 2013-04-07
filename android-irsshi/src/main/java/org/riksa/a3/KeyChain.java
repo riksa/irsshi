@@ -9,6 +9,8 @@ package org.riksa.a3;
 import org.riksa.irsshi.logger.LoggerFactory;
 import org.slf4j.Logger;
 import org.spongycastle.jce.provider.X509CertificateObject;
+import org.spongycastle.util.io.pem.PemObject;
+import org.spongycastle.util.io.pem.PemReader;
 import org.spongycastle.util.io.pem.PemWriter;
 
 import java.io.*;
@@ -84,6 +86,13 @@ public class KeyChain {
 //            X509Certificate cert = null;
 //            pemWriter.( cert );
         return null;
+    }
+
+    public static KeyPair readKeyPair(InputStream privateFile, InputStream publicFile, PromptPasswordCallback prompt) throws IOException {
+//        PemReader pemReader = new PemReader( new InputStreamReader(privateFile) );
+//        PasswordFinder passwordFinder = new PasswordFinder();
+//        PemObject pemObject = pemReader.readPemObject(
+        return null;  //To change body of created methods use File | Settings | File Templates.
     }
 
     public enum KeyType {RSA, DSA}

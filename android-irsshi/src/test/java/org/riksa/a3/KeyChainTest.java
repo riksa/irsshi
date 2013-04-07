@@ -6,17 +6,19 @@
 
 package org.riksa.a3;
 
+import com.jcraft.jsch.*;
 import junit.framework.TestCase;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.riksa.irsshi.logger.LoggerFactory;
 import org.slf4j.Logger;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.security.KeyPair;
 import java.security.KeyStoreException;
 import java.security.UnrecoverableKeyException;
 import java.util.Collection;
+import java.util.Scanner;
 
 import static org.mockito.Mockito.*;
 
@@ -26,7 +28,7 @@ import static org.mockito.Mockito.*;
  * Time: 21:09
  */
 public class KeyChainTest extends TestCase {
-    private static final Logger log = LoggerFactory.getLogger( KeyChainTest.class );
+    private static final Logger log = LoggerFactory.getLogger(KeyChainTest.class);
     public static final String KEYCHAIN_PASS = "pass";
     public static final String KEY_PASS = "pass";
     final File passFile = findFile("pass.bks");
@@ -49,6 +51,59 @@ public class KeyChainTest extends TestCase {
     public File findFile(String name) {
 
         return new File(name);
+    }
+
+    public void testPublicKeyAuth() throws Exception {
+        // just to figure out how it works on Jsch...
+        JSch jsch = new JSch();
+
+        Session session = jsch.getSession("irsshi", "htpc-pc.local", 22);
+
+        UserInfo ui = mock(UserInfo.class);
+        when(ui.promptPassphrase(anyString())).thenReturn(true);
+        when(ui.promptPassword(anyString())).thenReturn(false);
+        when(ui.getPassphrase()).thenReturn("password");
+        when(ui.promptYesNo(startsWith("The authenticity"))).thenReturn(true);
+//        when(ui.promptYesNo(anyString())).then(new Answer<Object>() {
+//            @Override
+//            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+//                Object[] arguments = invocationOnMock.getArguments();
+//                System.out.println("args: " + arguments[0]);
+//                return Boolean.TRUE;
+//            }
+//        });
+
+        session.setUserInfo(ui);
+        String prvKey = "src/test/resources/keys/linux-generated/rsa_password";
+
+        jsch.addIdentity(prvKey);
+
+        session.connect();
+
+        Channel channel = session.openChannel("shell");
+
+        channel.setInputStream(System.in);
+        channel.setOutputStream(System.out);
+
+        channel.connect();
+        Thread.sleep(5000);
+    }
+
+    public void testImportLinuxRsaPass() throws Exception {
+        InputStream privateFile = getInputStream("/keys/linux-generated/rsa_nopass");
+        InputStream publicFile = getInputStream("/keys/linux-generated/rsa_nopass.pub");
+        PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
+        verifyZeroInteractions(prompt);
+        KeyPair keyPair = KeyChain.readKeyPair(privateFile, publicFile, prompt);
+        assertEquals("RSA", keyPair.getPublic().getAlgorithm());
+    }
+
+    private InputStream getInputStream(String path) throws FileNotFoundException {
+        InputStream resourceAsStream = getClass().getResourceAsStream(path);
+        if (resourceAsStream == null) {
+            throw new FileNotFoundException(path);
+        }
+        return resourceAsStream;
     }
 
     public void testGenerateRSA() throws Exception {
@@ -118,8 +173,8 @@ public class KeyChainTest extends TestCase {
         KeyChain unlockedKeyChain = getUnlockedKeyChain();
 
         Collection<String> aliases = unlockedKeyChain.aliases();
-        for( String alias : aliases ) {
-            log.debug( "key alias={}", alias );
+        for (String alias : aliases) {
+            log.debug("key alias={}", alias);
         }
         assertSame(2, aliases.size());
         assertTrue(aliases.contains("pass"));

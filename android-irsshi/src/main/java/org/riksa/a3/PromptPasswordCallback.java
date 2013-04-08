@@ -12,16 +12,18 @@ package org.riksa.a3;
  * Time: 21:50
  */
 public interface PromptPasswordCallback {
-    /**
-     * Type of password, keyhchain or a single key
-     */
-    enum PasswordType {KEYCHAIN, KEY}
 
     /**
-     * Prompt user for a password
-     * @param lock password is requested for locking/unlocking (might want to double check the password if it's for locking keys)
-     * @param passwordType type of password requested, keychain or a single key.
+     * Prompt user for locking password
+     *
      * @return password from the user, null=cancel
      */
-    String getPassword(boolean lock, PasswordType passwordType);
+    String getLockingPassword();
+
+    /**
+     * Prompt user for unlocking password (might want to ask it twice)
+     *
+     * @return password from the user, null=cancel
+     */
+    String getUnlockingPassword();
 }

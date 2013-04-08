@@ -6,21 +6,18 @@
 
 package org.riksa.a3;
 
-import com.jcraft.jsch.*;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.KeyPair;
 import junit.framework.TestCase;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.riksa.irsshi.logger.LoggerFactory;
 import org.slf4j.Logger;
 
-import java.io.*;
-import java.security.KeyPair;
-import java.security.KeyStoreException;
-import java.security.UnrecoverableKeyException;
-import java.util.Collection;
-import java.util.Scanner;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static org.mockito.Mockito.*;
+
 
 /**
  * User: riksa
@@ -29,10 +26,118 @@ import static org.mockito.Mockito.*;
  */
 public class KeyChainTest extends TestCase {
     private static final Logger log = LoggerFactory.getLogger(KeyChainTest.class);
-    public static final String KEYCHAIN_PASS = "pass";
-    public static final String KEY_PASS = "pass";
-    final File passFile = findFile("pass.bks");
+    private static final String KEY_PASS = "password";
 
+    public void testGenerateRSA() throws Exception {
+        PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
+        when(prompt.getLockingPassword()).thenReturn(KEY_PASS);
+        KeyPair keyPair = KeyChain.generateKey(KeyPair.RSA, 512, prompt);
+        assertEquals(KeyPair.RSA, keyPair.getKeyType());
+        verify(prompt, times(1)).getLockingPassword();
+    }
+
+    public void testGenerateUnknownAlgo() throws Exception {
+        try {
+            KeyChain.generateKey(12345, 512, null);
+            fail();
+        } catch (JSchException e) {
+        }
+    }
+
+    public void testGenerateInvalidUnknown() throws Exception {
+        try {
+            KeyChain.generateKey(KeyPair.DSA, 5123, null);
+            fail();
+        } catch (JSchException e) {
+        }
+    }
+
+    public void testGenerateDSA() throws Exception {
+        PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
+        when(prompt.getLockingPassword()).thenReturn(KEY_PASS);
+        KeyPair keyPair = KeyChain.generateKey(KeyPair.DSA, 512, prompt);
+        assertEquals(KeyPair.DSA, keyPair.getKeyType());
+        verify(prompt, times(1)).getLockingPassword();
+    }
+
+    public void testSaveLoadEncrypted() throws Exception {
+        Path irsshi = Files.createTempDirectory("irsshi");
+        KeyChain keyChain = new KeyChain(irsshi.toFile());
+        PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
+        when(prompt.getUnlockingPassword()).thenReturn(KEY_PASS);
+        when(prompt.getLockingPassword()).thenReturn(KEY_PASS);
+        KeyPair keyPair = KeyChain.generateKey(KeyPair.DSA, 512, prompt);
+        keyChain.save("encrypted", keyPair, "comment");
+        assertTrue(keyChain.aliases().contains("encrypted"));
+        assertEquals(1, keyChain.aliases().size());
+
+        KeyPair loaded = keyChain.load("encrypted", prompt);
+        assertTrue(loaded.isEncrypted());
+    }
+
+    public void testSaveLoadUnencrypted() throws Exception {
+        Path irsshi = Files.createTempDirectory("irsshi");
+        KeyChain keyChain = new KeyChain(irsshi.toFile());
+        PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
+        when(prompt.getLockingPassword()).thenReturn("");
+        KeyPair keyPair = KeyChain.generateKey(KeyPair.DSA, 512, prompt);
+        keyChain.save("unencrypted", keyPair, "comment");
+        assertTrue(keyChain.aliases().contains("unencrypted"));
+        assertEquals(1, keyChain.aliases().size());
+
+        KeyPair loaded = keyChain.load("unencrypted", prompt);
+        assertFalse(loaded.isEncrypted());
+        verify(prompt, times(1)).getLockingPassword();
+    }
+
+    public void testGenerateAsync() throws Exception {
+        Path irsshi = Files.createTempDirectory("irsshi");
+        KeyChain keyChain = new KeyChain(irsshi.toFile());
+        PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
+        when(prompt.getLockingPassword()).thenReturn("");
+        when(prompt.getUnlockingPassword()).thenReturn("");
+        KeyGeneratorCallback keyGeneratorCallback = mock(KeyGeneratorCallback.class);
+        keyChain.generateKeyAsync(keyGeneratorCallback, prompt, "alias", KeyPair.RSA, 512, "comment");
+        Thread.sleep(1000);
+        verify(keyGeneratorCallback, times(1)).succeeded("alias");
+    }
+
+    public void testGenerateUnknownAlgoAsync() throws Exception {
+        Path irsshi = Files.createTempDirectory("irsshi");
+        KeyChain keyChain = new KeyChain(irsshi.toFile());
+        PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
+        when(prompt.getLockingPassword()).thenReturn("");
+        when(prompt.getUnlockingPassword()).thenReturn("");
+        KeyGeneratorCallback keyGeneratorCallback = mock(KeyGeneratorCallback.class);
+        keyChain.generateKeyAsync(keyGeneratorCallback, prompt, "alias", 12345, 512, "comment");
+        Thread.sleep(1000);
+        verify(keyGeneratorCallback, times(1)).failed(matches("alias"), anyString());
+    }
+
+    public void testGenerateInvalidUnknownAsync() throws Exception {
+        Path irsshi = Files.createTempDirectory("irsshi");
+        KeyChain keyChain = new KeyChain(irsshi.toFile());
+        PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
+        when(prompt.getLockingPassword()).thenReturn("");
+        when(prompt.getUnlockingPassword()).thenReturn("");
+        KeyGeneratorCallback keyGeneratorCallback = mock(KeyGeneratorCallback.class);
+        keyChain.generateKeyAsync(keyGeneratorCallback, prompt, "alias", KeyPair.DSA, 5121, "comment");
+        Thread.sleep(1000);
+        verify(keyGeneratorCallback, times(1)).failed(matches("alias"), anyString());
+    }
+
+    public void testUnwritable() throws Exception {
+        KeyChain keyChain = new KeyChain(new File("ö:\\"));
+        PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
+        when(prompt.getLockingPassword()).thenReturn("");
+        when(prompt.getUnlockingPassword()).thenReturn("");
+        KeyGeneratorCallback keyGeneratorCallback = mock(KeyGeneratorCallback.class);
+        keyChain.generateKeyAsync(keyGeneratorCallback, prompt, "alias", KeyPair.RSA, 512, "comment");
+        Thread.sleep(1000);
+        verify(keyGeneratorCallback, times(1)).failed(matches("alias"), anyString());
+    }
+
+    /*
     private KeyChain getUnlockedKeyChain() throws IOException, KeyStoreException {
         PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
         when(prompt.getPassword(false, PromptPasswordCallback.PasswordType.KEYCHAIN)).thenReturn(KEYCHAIN_PASS);
@@ -316,5 +421,5 @@ public class KeyChainTest extends TestCase {
 //        assertFalse(newFile.exists());
 //    }
 
-
+*/
 }

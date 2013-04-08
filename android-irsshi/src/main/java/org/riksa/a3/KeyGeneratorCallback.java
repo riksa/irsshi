@@ -8,8 +8,11 @@ package org.riksa.a3;
 
 /**
  * User: riksa
- * Date: 4.4.2013
- * Time: 19:17
+ * Date: 8.4.2013
+ * Time: 18:55
  */
-public class KeyStoreLockedException extends Exception {
+public interface KeyGeneratorCallback {
+    void succeeded(String alias);
+
+    void failed(String alias, String message);
 }

@@ -71,8 +71,8 @@ public class KeyChain {
         }
     }
 
-    public KeyPair load(String alias, PromptPasswordCallback prompt) throws JSchException {
-        KeyPair load = KeyPair.load(getJsch(), fileForAlias(alias, true), fileForAlias(alias, false));
+    public KeyPair load(String privateFile, String publicFile) throws JSchException {
+        return KeyPair.load(getJsch(), privateFile, publicFile);
 //        if(load.isEncrypted()) {
 //            String unlockingPassword = prompt.getUnlockingPassword();
 //            if( unlockingPassword == null ) {
@@ -80,7 +80,10 @@ public class KeyChain {
 //                return load;
 //            }
 //        }
-        return load;
+    }
+
+    public KeyPair load(String alias) throws JSchException {
+        return load(fileForAlias(alias, true), fileForAlias(alias, false));
     }
 
     public static KeyPair generateKey(final int keyType, final int keyBits, PromptPasswordCallback passwordCallback) throws JSchException {

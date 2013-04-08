@@ -53,6 +53,18 @@ public class KeyChainTest extends TestCase {
         return new File(name);
     }
 
+    public void testStoreKeyPair() throws Exception {
+        KeyPair keyPair = KeyChain.generateKey(KeyChain.KeyType.RSA, 512);
+        assertEquals("RSA", keyPair.getPublic().getAlgorithm());
+
+        KeyChain keyChain = new KeyChain(null);
+
+        PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
+        when(prompt.getPassword(true, PromptPasswordCallback.PasswordType.KEY)).thenReturn(KEY_PASS);
+        keyChain.store("test", keyPair, prompt);
+
+    }
+
     public void testPublicKeyAuth() throws Exception {
         // just to figure out how it works on Jsch...
         JSch jsch = new JSch();

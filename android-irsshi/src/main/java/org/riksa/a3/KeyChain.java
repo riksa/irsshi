@@ -10,13 +10,17 @@ import org.riksa.irsshi.logger.LoggerFactory;
 import org.slf4j.Logger;
 import org.spongycastle.jce.provider.X509CertificateObject;
 import org.spongycastle.util.io.pem.PemObject;
+import org.spongycastle.util.io.pem.PemObjectGenerator;
 import org.spongycastle.util.io.pem.PemReader;
 import org.spongycastle.util.io.pem.PemWriter;
+import sun.security.rsa.RSAKeyPairGenerator;
 
 import java.io.*;
 import java.security.*;
 import java.security.cert.*;
 import java.security.cert.Certificate;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.LinkedList;
@@ -53,17 +57,22 @@ public class KeyChain {
         return ret;
     }
 
-    public void store(String alias, KeyPair keyPair, PromptPasswordCallback callback) throws KeyStoreLockedException {
-        if (isLocked()) {
-            throw new KeyStoreLockedException();
-        }
-
-        String password = callback.getPassword(true, PromptPasswordCallback.PasswordType.KEY);
-        if (password != null) {
-            final KeyStore.PasswordProtection pp = new KeyStore.PasswordProtection(password.toCharArray());
-            Certificate[] certificateChain;
-//            keystore.setKeyEntry(alias, key, password.toCharArray(), certificateChain );
-        }
+    public void store(String alias, KeyPair keyPair, PromptPasswordCallback callback) {
+        X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(keyPair.getPublic().getEncoded());
+        System.out.println(new String(x509EncodedKeySpec.getEncoded()));
+        PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(keyPair.getPrivate().getEncoded());
+//        System.out.println(new String(pkcs8EncodedKeySpec.getEncoded()));
+        PemWriter pemWriter = new PemWriter(new PrintWriter(System.out));
+//        pemWriter.writeObject(x509EncodedKeySpec.);
+//        new PemObject() {
+//
+//        } keyPair.getPublic());
+//        String password = callback.getPassword(true, PromptPasswordCallback.PasswordType.KEY);
+//        if (password != null) {
+//            final KeyStore.PasswordProtection pp = new KeyStore.PasswordProtection(password.toCharArray());
+//            Certificate[] certificateChain;
+////            keystore.setKeyEntry(alias, key, password.toCharArray(), certificateChain );
+//        }
     }
 
     public KeyPair getKeyPair(String alias, PromptPasswordCallback callback) throws KeyStoreLockedException, UnrecoverableEntryException, NoSuchAlgorithmException, KeyStoreException {
@@ -81,7 +90,7 @@ public class KeyChain {
 //        log.debug("class={}", entry.getClass());
         X509CertificateObject certificate = (X509CertificateObject) keystore.getCertificate(alias);
 //        KeyStore.Entry entry = keystore.getEntry(alias, pp);
-            log.debug("class={}", certificate.getPublicKey().getEncoded() );
+        log.debug("class={}", certificate.getPublicKey().getEncoded());
 //            PemWriter pemWriter = new PemWriter(new PrintWriter(System.out));
 //            X509Certificate cert = null;
 //            pemWriter.( cert );

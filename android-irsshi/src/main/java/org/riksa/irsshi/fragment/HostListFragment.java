@@ -7,7 +7,6 @@
 package org.riksa.irsshi.fragment;
 
 import android.app.*;
-import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -15,8 +14,14 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.*;
-import android.widget.*;
-import org.riksa.irsshi.*;
+import android.widget.AdapterView;
+import android.widget.CursorAdapter;
+import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
+import org.riksa.irsshi.IrsshiApplication;
+import org.riksa.irsshi.R;
+import org.riksa.irsshi.TermHostDao;
+import org.riksa.irsshi.TerminalsActivity;
 import org.riksa.irsshi.domain.TermHost;
 import org.riksa.irsshi.logger.LoggerFactory;
 import org.riksa.irsshi.provider.HostProviderMetaData;
@@ -31,7 +36,7 @@ public class HostListFragment extends ListFragment implements LoaderManager.Load
     private static final Logger log = LoggerFactory.getLogger(HostListFragment.class);
     //    private TermHostDao termHostDao;
     private CursorAdapter mAdapter;
-    private IrsshiServiceConnection serviceConnection = new IrsshiServiceConnection();
+//    private IrsshiServiceConnection serviceConnection = new IrsshiServiceConnection();
     /*
     private IrsshiService mBoundService;
 
@@ -77,7 +82,7 @@ public class HostListFragment extends ListFragment implements LoaderManager.Load
 //        setListAdapter(HostListSimpleAdapter.create(getActivity(), hosts));
 
         registerForContextMenu(getListView());
-        getActivity().bindService(new Intent(getActivity(), IrsshiService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+//        getActivity().bindService(new Intent(getActivity(), IrsshiService.class), serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -85,9 +90,9 @@ public class HostListFragment extends ListFragment implements LoaderManager.Load
         super.onPause();    //To change body of overridden methods use File | Settings | File Templates.
         unregisterForContextMenu(getListView());
 
-        if (serviceConnection.isBound()) {
-            getActivity().unbindService(serviceConnection);
-        }
+//        if (serviceConnection.isBound()) {
+//            getActivity().unbindService(serviceConnection);
+//        }
     }
 
     @Override

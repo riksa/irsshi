@@ -7,20 +7,19 @@
 package org.riksa.irsshi;
 
 import android.app.Application;
-import android.content.*;
-import android.net.Uri;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.IBinder;
-import android.os.StrictMode;
-import org.riksa.irsshi.domain.LocalTermHost;
-import org.riksa.irsshi.domain.MoshTermHost;
-import org.riksa.irsshi.domain.SshTermHost;
-import org.riksa.irsshi.domain.TermHost;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import org.riksa.irsshi.logger.LoggerFactory;
-import org.riksa.irsshi.provider.HostProviderMetaData;
 import org.slf4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * User: riksa
@@ -29,11 +28,36 @@ import java.util.Collection;
  */
 public class IrsshiApplication extends Application {
     private static final Logger log = LoggerFactory.getLogger(IrsshiApplication.class);
-    private TermHostDao termHostDao;
     private static IrsshiService irsshiService;
+    private static Messenger messenger;
+    private static final Queue<Message> messageQueue = new ConcurrentLinkedQueue<Message>();
 
+    @Deprecated
+    /**
+     * Todo: Messaging based communication with the service...
+     */
     public static IrsshiService getIrsshiService() {
+        log.error( "This is broken, use messages");
         return irsshiService;
+    }
+
+    /**
+     * Send message to service. Queues message if it cannot be sent immediately (can happen if the service is not yet started)
+     *
+     * @param message message to send
+     * @return true if message was sent, false if it was queued for sending later
+     */
+    public static boolean sendServiceMessage(Message message) {
+        if (messenger != null) {
+            try {
+                messenger.send(message);
+                return true;
+            } catch (RemoteException e) {
+                log.error(e.getMessage());
+            }
+        }
+        messageQueue.add(message);
+        return false;
     }
 
     @Override
@@ -46,12 +70,22 @@ public class IrsshiApplication extends Application {
 
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-                irsshiService = ((IrsshiService.LocalBinder) iBinder).getService();
+//                irsshiService = ((IrsshiService.LocalBinder) iBinder).getService();
+                messenger = new Messenger(iBinder);
+                while (!messageQueue.isEmpty()) {
+                    try {
+                        Message message = messageQueue.remove();
+                        messenger.send(message);
+                    } catch (RemoteException e) {
+                        log.error(e.getMessage());
+                    }
+                }
             }
 
             @Override
             public void onServiceDisconnected(ComponentName componentName) {
-                irsshiService = null;
+//                irsshiService = null;
+                messenger = null;
             }
         }, Context.BIND_AUTO_CREATE);
 

@@ -12,7 +12,16 @@ package org.riksa.a3;
  * Time: 18:55
  */
 public interface KeyGeneratorCallback {
+    /**
+     * Called after a key generation finishes successfully
+     * @param alias of the key that was generated
+     */
     void succeeded(String alias);
 
+    /**
+     * Called if the key generation fails for some reason
+     * @param alias alias of the key that was requested
+     * @param message the error message
+     */
     void failed(String alias, String message);
 }

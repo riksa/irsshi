@@ -35,6 +35,7 @@ public class KeyChain {
 
     public KeyChain(File rootDirectory) {
         this.rootDirectory = rootDirectory;
+        log.debug("Storing keys in {}", rootDirectory.getAbsolutePath());
     }
 
     static {

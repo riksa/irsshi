@@ -9,13 +9,10 @@ package org.riksa.irsshi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Service;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Binder;
-import android.os.Handler;
-import android.os.IBinder;
+import android.os.*;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.EditText;
@@ -26,6 +23,7 @@ import com.jcraft.jsch.UserInfo;
 import jackpal.androidterm.emulatorview.TermSession;
 import jackpal.androidterm.util.TermSettings;
 import org.riksa.a3.KeyChain;
+import org.riksa.a3.KeyGeneratorCallback;
 import org.riksa.a3.PromptPasswordCallback;
 import org.riksa.irsshi.domain.ConnectionInfo;
 import org.riksa.irsshi.domain.ConnectionStateChangeListener;
@@ -35,11 +33,10 @@ import org.riksa.irsshi.logger.LoggerFactory;
 import org.riksa.irsshi.util.IrsshiUtils;
 import org.slf4j.Logger;
 
-import java.io.IOException;
-import java.security.KeyStoreException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
+
+import static com.jcraft.jsch.KeyPair.RSA;
 
 /**
  * User: riksa
@@ -48,16 +45,108 @@ import java.util.concurrent.ExecutorService;
  */
 public class IrsshiService extends Service {
     private static final Logger log = LoggerFactory.getLogger(IrsshiService.class);
-    private final IBinder mBinder = new LocalBinder();
+    /**
+     * Alias of the key, default "default"
+     */
+    public static final String EXTRA_ALIAS = "EXTRA_ALIAS";
+    /**
+     * Type of the key. 1=DSA, 2=RSA. (default 2 (RSA)), {@see com.jcraft.jsch.KeyPair.RSA} {@see com.jcraft.jsch.KeyPair.DSA}
+     */
+    public static final String EXTRA_KEYTYPE = "EXTRA_KEYTYPE";
+    /**
+     * Strength of key in bits (default 2048)
+     */
+    public static final String EXTRA_BITS = "EXTRA_BITS";
+    /**
+     * Comment for the public key (the text appended to the public key in the file), e.g. "IrSSHi on Nexus7". Default="irSSHi"
+     */
+    public static final String EXTRA_COMMENT = "EXTRA_COMMENT";
+    public static final int GENERATE_KEYPAIR = 1;
+
+    /**
+     * Positive response codes are, well, positive. Negative are error codes
+     */
+    public static final int STATUS_OK = 0;
+
+    /**
+     * Positive response codes are, well, positive. Negative are error codes
+     */
+    public static final int STATUS_ERROR = -1;
+
+
+    //    private final IBinder mBinder = new LocalBinder();
     private TermHostDao termHostDao;
     private Handler handler;
     private static final List<ConnectionInfo> connections = new LinkedList<ConnectionInfo>();
     private KeyChain keyChain;
+    private Messenger messenger = new Messenger(new Handler() {
+        @Override
+        public void handleMessage(final Message msg) {
+            switch (msg.what) {
+                case GENERATE_KEYPAIR:
+                    log.debug("GENERATE_KEYPAIR");
+                    String alias = "default";
+                    if (msg.obj != null && msg.obj instanceof String) {
+                        alias = (String) msg.obj; //getData().getString(EXTRA_ALIAS, "default");
+                    }
+                    int type = msg.arg1; //.getData().getInt(EXTRA_KEYTYPE, RSA);
+                    int bits = msg.arg2; //getData().getInt(EXTRA_BITS, 2048);
+                    String comment = msg.getData().getString(EXTRA_COMMENT, "irSSHi");
+//                    msg.getData().getString(EXTRA_COMMENT, "default");
+
+                    KeyGeneratorCallback keyGeneratorCallback = new KeyGeneratorCallback() {
+                        final Messenger replyTo = msg.replyTo;
+
+                        @Override
+                        public void succeeded(String alias) {
+                            log.debug("Generate key {}", alias);
+                            if (replyTo != null) {
+                                try {
+                                    replyTo.send(Message.obtain(null, STATUS_OK, alias));
+                                } catch (RemoteException e) {
+                                    log.error(e.getMessage());
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void failed(String alias, String message) {
+                            log.debug("Failed to generate key {}, {}", alias, message);
+                            if (replyTo != null) {
+                                try {
+                                    replyTo.send(Message.obtain(null, STATUS_ERROR, alias));
+                                } catch (RemoteException e) {
+                                    log.error(e.getMessage());
+                                }
+                            }
+                        }
+                    };
+                    PromptPasswordCallback promptPasswordCallback = new PromptPasswordCallback() {
+                        @Override
+                        public String getLockingPassword() {
+                            // TODO: Prompt from user when needed? or get it from the msg?
+                            return "";
+                        }
+
+                        @Override
+                        public String getUnlockingPassword() {
+                            return null;
+                        }
+                    };
+                    keyChain.generateKeyAsync(keyGeneratorCallback, promptPasswordCallback, alias, type, bits, comment);
+                    break;
+                default:
+                    log.warn("Unknown msg.what({}), message={} : ", msg.what, msg);
+            }
+            super.handleMessage(msg);    //To change body of overridden methods use File | Settings | File Templates.
+        }
+    });
 
     // TODO: delegate
     public TermHostDao getTermHostDao() {
         return termHostDao;
     }
+
 
 //    public SessionList getSessions() {
 //        return sessions;
@@ -199,14 +288,14 @@ public class IrsshiService extends Service {
         new Thread(runnable).start();
     }
 
-    public class LocalBinder extends Binder {
-        public IrsshiService getService() {
-            return IrsshiService.this;
-        }
-    }
+//    public class LocalBinder extends Binder {
+//        public IrsshiService getService() {
+//            return IrsshiService.this;
+//        }
+//    }
 
     public IBinder onBind(Intent intent) {
-        return mBinder;
+        return messenger.getBinder(); //mBinder;
     }
 
     @Override
@@ -215,12 +304,11 @@ public class IrsshiService extends Service {
         log.debug("onCreate");
         handler = new Handler();
         termHostDao = new ContentProviderTermHostDao(this);
-        throw new RuntimeException("TODO");
-//        keyChain = new KeyChain(null);
-//        if (IrsshiApplication.isFirstLaunch()) {
-//            Intent tutorial = new Intent(getBaseContext(), TutorialActivity.class);
-//            tutorial.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//            getApplication().startActivity(tutorial);
+        keyChain = new KeyChain(Environment.getDataDirectory());
+        if (IrsshiApplication.isFirstLaunch()) {
+            Intent tutorial = new Intent(getBaseContext(), TutorialActivity.class);
+            tutorial.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getApplication().startActivity(tutorial);
 //            PromptPasswordCallback callback = new PromptPasswordCallback() {
 //                @Override
 //                public String getPassword(boolean lock, PasswordType passwordType) {
@@ -229,7 +317,7 @@ public class IrsshiService extends Service {
 //                }
 //            };
 //            keyChain.generateKeyAsync(callback, "default", "RSA", 2048);
-//        }
+        }
     }
 
     @Override

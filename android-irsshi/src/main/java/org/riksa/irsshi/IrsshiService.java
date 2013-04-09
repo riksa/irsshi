@@ -33,6 +33,7 @@ import org.riksa.irsshi.logger.LoggerFactory;
 import org.riksa.irsshi.util.IrsshiUtils;
 import org.slf4j.Logger;
 
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -72,6 +73,7 @@ public class IrsshiService extends Service {
      * Positive response codes are, well, positive. Negative are error codes
      */
     public static final int STATUS_ERROR = -1;
+    private static final String KEY_FILE_DIR = ".ssh";
 
 
     //    private final IBinder mBinder = new LocalBinder();
@@ -304,7 +306,9 @@ public class IrsshiService extends Service {
         log.debug("onCreate");
         handler = new Handler();
         termHostDao = new ContentProviderTermHostDao(this);
-        keyChain = new KeyChain(Environment.getDataDirectory());
+        File filesDir = new File(getApplicationContext().getFilesDir(), KEY_FILE_DIR);
+        filesDir.mkdirs();
+        keyChain = new KeyChain(filesDir);
         if (IrsshiApplication.isFirstLaunch()) {
             Intent tutorial = new Intent(getBaseContext(), TutorialActivity.class);
             tutorial.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

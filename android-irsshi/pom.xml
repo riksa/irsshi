@@ -24,11 +24,11 @@
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
+            <artifactId>slf4j-log4j12</artifactId> <!-- SLF4J implementation for test scope -->
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
+            <artifactId>slf4j-android</artifactId> <!-- SLF4J implementation for device -->
         </dependency>
         <dependency>
             <groupId>junit</groupId>

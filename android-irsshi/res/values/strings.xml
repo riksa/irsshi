@@ -63,5 +63,10 @@
     <!-- TutorialActivity -->
     <string name="button_next">Next</string>
     <string name="button_prev">Previous</string>
+    <string name="generate_key">Generate key</string>
+    <string name="import_private_key">Import Private Key</string>
+    <string name="prompt_key_type">Key type</string>
+    <string name="prompt_key_bits">Key strength</string>
+    <string name="button_generate_key">Generate Key</string>
 
 </resources>

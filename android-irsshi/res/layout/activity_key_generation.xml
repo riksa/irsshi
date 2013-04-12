@@ -22,33 +22,23 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-    <ViewFlipper
-        android:id="@+id/view_flipper"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="2">
-
-        <include android:id="@+id/first_page" layout="@layout/tutorial_page_1" />
-        <include layout="@layout/tutorial_page_2" />
-        <include android:id="@+id/last_page" layout="@layout/tutorial_page_3" />
-
-    </ViewFlipper>
-
-    <LinearLayout
-        android:layout_width="match_parent"
+    <Spinner
+        android:id="@+id/key_type"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="right">
+        android:entries="@array/key_types"
+        android:prompt="@string/prompt_key_type"/>
 
-        <Button
-            android:id="@+id/button_prev"
-            style="@style/button_prev"
-            android:onClick="onPrevClicked"/>
+    <Spinner
+        android:id="@+id/key_bits"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:entries="@array/key_bits"
+        android:prompt="@string/prompt_key_bits"/>
 
-        <Button
-            android:id="@+id/button_next"
-            style="@style/button_next"
-            android:onClick="onNextClicked"/>
-
-    </LinearLayout>
+    <Button
+        android:onClick="onGenerateKeyClicked"
+        style="@style/button"
+        android:text="@string/button_generate_key"/>
 
 </LinearLayout>

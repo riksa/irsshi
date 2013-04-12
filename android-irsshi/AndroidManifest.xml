@@ -28,7 +28,8 @@
     <application
         android:icon="@drawable/icon"
         android:label="@string/app_name"
-        android:name=".IrsshiApplication">
+        android:name=".IrsshiApplication"
+        android:theme="@style/Theme.Holo">
         <!--<activity android:name=".HelloAndroidActivity">-->
         <!--<intent-filter>-->
         <!--<action android:name="android.intent.action.MAIN"/>-->
@@ -36,8 +37,7 @@
         <!--</intent-filter>-->
         <!--</activity>-->
         <activity
-            android:name=".HostListActivity"
-            android:theme="@style/Theme.Holo">
+            android:name=".HostListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -50,6 +50,7 @@
         <activity
             android:name=".TutorialActivity"
             android:label="@string/tutorial_label"/>
+        <activity android:name=".KeyGenerationActivity"/>
 
         <provider
             android:name=".provider.HostProvider"

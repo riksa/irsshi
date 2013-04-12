@@ -18,6 +18,8 @@
 package org.riksa.irsshi;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -38,36 +40,13 @@ import java.security.KeyPair;
  */
 public class TutorialActivity extends Activity {
     private static final Logger log = LoggerFactory.getLogger(TutorialActivity.class);
-    private Handler handler;
-    Messenger messenger;
+    private static final int REQUEST_PICK_FILE = 1;
+    private static final int REQUEST_GENERATE_FILE = 2;
 
     public void onCreate(Bundle savedInstanceState) {
         // TODO: some kind of click through welcome to IrSSHi process here...
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tutorial);
-
-        handler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                switch (msg.what) {
-                    case IrsshiService.STATUS_OK:
-                        log.debug("Generated key " + msg.obj);
-                        Toast.makeText(TutorialActivity.this, "Generated key " + msg.obj, Toast.LENGTH_SHORT).show();
-                        break;
-                    case IrsshiService.STATUS_ERROR:
-                        log.debug("Failed to generate key " + msg.obj);
-                        Toast.makeText(TutorialActivity.this, "Failed to generate key " + msg.obj, Toast.LENGTH_SHORT).show();
-                        break;
-                    default:
-                        log.warn("Unknown status code " + msg.what);
-                }
-                super.handleMessage(msg);    //To change body of overridden methods use File | Settings | File Templates.
-            }
-        };
-        messenger = new Messenger(handler);
-        Message message = Message.obtain(handler, IrsshiService.GENERATE_KEYPAIR, 1 /* 1=RSA */, 512, "default");
-        message.replyTo = messenger;
-        IrsshiApplication.sendServiceMessage(message);
     }
 
     public void onPrevClicked(View view) {
@@ -78,4 +57,30 @@ public class TutorialActivity extends Activity {
         IrsshiUtils.findView(this, ViewFlipper.class, R.id.view_flipper).showNext();
     }
 
+    public void onGenerateKeyClicked(View view) {
+        Intent intent = new Intent(this, KeyGenerationActivity.class);
+        startActivityForResult(intent, REQUEST_GENERATE_FILE);
+    }
+
+    public void onImportKeyClicked(View view) {
+        Intent intent = new Intent("org.openintents.action.PICK_FILE");
+        startActivityForResult(intent, REQUEST_PICK_FILE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_PICK_FILE:
+                Uri uri = data.getData();
+                log.info("TODO: Import key {}", uri);
+                break;
+            case REQUEST_GENERATE_FILE:
+                if (resultCode == RESULT_OK) {
+                    finish();
+                }
+                break;
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);    //To change body of overridden methods use File | Settings | File Templates.
+    }
 }

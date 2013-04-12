@@ -2,6 +2,7 @@
   <settings default="irsshi">
     <module2copyright>
       <element module="All" copyright="irsshi" />
+      <element module="Production" copyright="irsshi" />
     </module2copyright>
   </settings>
 </component>

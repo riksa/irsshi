@@ -1,7 +1,18 @@
 /*
  * This file is part of irSSHi - Android SSH client
  * Copyright (c) 2013. riku salkia <riksa@iki.fi>
- * TODO: License ;)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.riksa.irsshi;
@@ -14,6 +25,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.*;
 import android.preference.PreferenceManager;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import com.jcraft.jsch.Channel;
@@ -309,10 +321,9 @@ public class IrsshiService extends Service {
         File filesDir = new File(getApplicationContext().getFilesDir(), KEY_FILE_DIR);
         filesDir.mkdirs();
         keyChain = new KeyChain(filesDir);
-        if (IrsshiApplication.isFirstLaunch()) {
-            Intent tutorial = new Intent(getBaseContext(), TutorialActivity.class);
-            tutorial.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            getApplication().startActivity(tutorial);
+//            Intent tutorial = new Intent(getBaseContext(), TutorialActivity.class);
+//            tutorial.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            getApplication().startActivity(tutorial);
 //            PromptPasswordCallback callback = new PromptPasswordCallback() {
 //                @Override
 //                public String getPassword(boolean lock, PasswordType passwordType) {
@@ -321,7 +332,6 @@ public class IrsshiService extends Service {
 //                }
 //            };
 //            keyChain.generateKeyAsync(callback, "default", "RSA", 2048);
-        }
     }
 
     @Override

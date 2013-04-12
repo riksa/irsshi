@@ -1,7 +1,18 @@
 /*
  * This file is part of irSSHi - Android SSH client
  * Copyright (c) 2013. riku salkia <riksa@iki.fi>
- * TODO: License ;)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.riksa.irsshi;
@@ -11,8 +22,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
+import android.view.View;
 import android.widget.Toast;
+import android.widget.ViewFlipper;
 import org.riksa.irsshi.logger.LoggerFactory;
+import org.riksa.irsshi.util.IrsshiUtils;
 import org.slf4j.Logger;
 
 import java.security.KeyPair;
@@ -30,6 +44,8 @@ public class TutorialActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         // TODO: some kind of click through welcome to IrSSHi process here...
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_tutorial);
+
         handler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -52,6 +68,14 @@ public class TutorialActivity extends Activity {
         Message message = Message.obtain(handler, IrsshiService.GENERATE_KEYPAIR, 1 /* 1=RSA */, 512, "default");
         message.replyTo = messenger;
         IrsshiApplication.sendServiceMessage(message);
-
     }
+
+    public void onPrevClicked(View view) {
+        IrsshiUtils.findView(this, ViewFlipper.class, R.id.view_flipper).showPrevious();
+    }
+
+    public void onNextClicked(View view) {
+        IrsshiUtils.findView(this, ViewFlipper.class, R.id.view_flipper).showNext();
+    }
+
 }

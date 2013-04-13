@@ -23,7 +23,7 @@
 
     <uses-sdk
         android:targetSdkVersion="15"
-        android:minSdkVersion="8"></uses-sdk>
+        android:minSdkVersion="4"></uses-sdk>
 
     <application
         android:icon="@drawable/icon"
@@ -50,7 +50,6 @@
         <activity
             android:name=".TutorialActivity"
             android:label="@string/tutorial_label"/>
-        <activity android:name=".KeyGenerationActivity"/>
 
         <provider
             android:name=".provider.HostProvider"

@@ -40,6 +40,7 @@ import org.slf4j.Logger;
  * User: riksa
  * Date: 2/8/13
  * Time: 12:56 PM
+ * TODO: Via support
  */
 public class TermHostEditDialog extends DialogFragment {
     private int defaultPort = 22;

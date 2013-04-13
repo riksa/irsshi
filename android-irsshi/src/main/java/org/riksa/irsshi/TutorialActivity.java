@@ -17,28 +17,25 @@
 
 package org.riksa.irsshi;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Messenger;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.view.View;
-import android.widget.Toast;
 import android.widget.ViewFlipper;
+import org.riksa.irsshi.fragment.KeyGenerationDialogFragment;
+import org.riksa.irsshi.fragment.KeyGenerationDialogListener;
 import org.riksa.irsshi.logger.LoggerFactory;
 import org.riksa.irsshi.util.IrsshiUtils;
 import org.slf4j.Logger;
-
-import java.security.KeyPair;
 
 /**
  * User: riksa
  * Date: 24.3.2013
  * Time: 21:31
  */
-public class TutorialActivity extends Activity {
+public class TutorialActivity extends FragmentActivity {
     private static final Logger log = LoggerFactory.getLogger(TutorialActivity.class);
     private static final int REQUEST_PICK_FILE = 1;
     private static final int REQUEST_GENERATE_FILE = 2;
@@ -58,9 +55,27 @@ public class TutorialActivity extends Activity {
     }
 
     public void onGenerateKeyClicked(View view) {
-        Intent intent = new Intent(this, KeyGenerationActivity.class);
-        startActivityForResult(intent, REQUEST_GENERATE_FILE);
+//        Intent intent = new Intent(this, KeyGenerationActivity.class);
+//        startActivityForResult(intent, REQUEST_GENERATE_FILE);
+        KeyGenerationDialogFragment dialogFragment = new KeyGenerationDialogFragment();
+        dialogFragment.setKeyGenerationDialogListener(
+                new KeyGenerationDialogListener() {
+                    @Override
+                    public void onCancel() {
+                        log.debug("onCancel");
+                    }
+
+                    @Override
+                    public void onOk() {
+                        log.debug("onOk {}");
+                        finish();
+                    }
+                });
+        FragmentManager fm = getSupportFragmentManager();
+        dialogFragment.show(fm, KeyGenerationDialogFragment.TAG);
+
     }
+
 
     public void onImportKeyClicked(View view) {
         Intent intent = new Intent("org.openintents.action.PICK_FILE");

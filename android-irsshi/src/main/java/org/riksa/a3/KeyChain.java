@@ -122,7 +122,7 @@ public class KeyChain {
                     keyPair.dispose();
                     keyGeneratorCallback.succeeded(alias);
                 } catch (JSchException e) {
-                    log.error(e.getMessage());
+                    log.error("" + e.getMessage());
                     keyGeneratorCallback.failed(alias, e.getMessage());
                 } catch (IOException e) {
                     log.error(e.getMessage());

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ This file is part of irSSHi - Android SSH client
+  ~ Copyright (c) 2013. riku salkia <riksa@iki.fi>
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <RelativeLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!--<TextView-->
+                <!--style="@style/label"-->
+                <!--android:text="Key type"/>-->
+        <!---->
+            <Spinner
+                android:layout_alignParentTop="true"
+                style="@style/dialog_spinner"
+                android:id="@+id/key_type"
+                android:entries="@array/key_types"
+                android:prompt="@string/prompt_key_type"/>
+
+            <!--<TextView-->
+                <!--style="@style/label"-->
+                <!--android:text="Key strength"/>-->
+        <!---->
+            <Spinner
+                style="@style/dialog_spinner"
+                android:layout_below="@+id/key_type"
+                android:id="@+id/key_bits"
+                android:entries="@array/rsa_bits"
+                android:prompt="@string/prompt_key_bits"/>
+
+            <EditText
+                style="@style/dialog_password"
+                android:layout_below="@+id/key_bits"
+                android:hint="@string/dialog_password_hint_1"
+                android:id="@+id/password_1"/>
+
+            <EditText
+                style="@style/dialog_password"
+                android:layout_below="@+id/password_1"
+                android:hint="@string/dialog_password_hint_2"
+                android:id="@+id/password_2"/>
+
+            <!--<Spinner-->
+                <!--android:id="@+id/spinner"-->
+                <!--style="@style/dialog_spinner"-->
+                <!--android:layout_alignParentTop="true"-->
+                <!--android:entries="@array/host_types"/>-->
+
+            <!--<EditText-->
+                <!--style="@style/dialog_edit"-->
+                <!--android:layout_below="@+id/spinner"-->
+                <!--android:hint="@string/username_hint"-->
+                <!--android:id="@+id/username"/>-->
+
+            <!--<EditText-->
+                <!--style="@style/dialog_edit"-->
+                <!--android:layout_alignBaseline="@+id/hostname"-->
+                <!--android:layout_alignParentRight="true"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:inputType="number"-->
+                <!--android:text="22"-->
+                <!--android:hint="@string/port_hint"-->
+                <!--android:id="@+id/port"/>-->
+
+            <!--<EditText-->
+                <!--style="@style/dialog_edit"-->
+                <!--android:layout_below="@+id/username"-->
+                <!--android:layout_toLeftOf="@+id/port"-->
+                <!--android:hint="@string/hostname_hint"-->
+                <!--android:inputType="textUri"-->
+                <!--android:id="@+id/hostname"/>-->
+
+            <!--<EditText-->
+                <!--style="@style/dialog_edit"-->
+                <!--android:layout_below="@+id/hostname"-->
+                <!--android:hint="@string/nickname_hint"-->
+                <!--android:id="@+id/nickname"/>-->
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/button_generate_key"
+            style="@style/button"
+            android:layout_width="match_parent"
+            android:text="@string/button_generate_key"/>
+
+        <!--<Button-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:text="@string/cancel"-->
+            <!--android:id="@+id/cancel"/>-->
+
+        <!--<Button-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:text="@string/ok"-->
+            <!--android:id="@+id/ok"/>-->
+
+    </LinearLayout>
+
+</LinearLayout>
+

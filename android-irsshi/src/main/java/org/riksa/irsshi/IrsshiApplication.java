@@ -52,24 +52,24 @@ public class IrsshiApplication extends Application {
         return irsshiService;
     }
 
-    /**
-     * Send message to service. Queues message if it cannot be sent immediately (can happen if the service is not yet started)
-     *
-     * @param message message to send
-     * @return true if message was sent, false if it was queued for sending later
-     */
-    public static boolean sendServiceMessage(Message message) {
-        if (messenger != null) {
-            try {
-                messenger.send(message);
-                return true;
-            } catch (RemoteException e) {
-                log.error(e.getMessage());
-            }
-        }
-        messageQueue.add(message);
-        return false;
-    }
+//    /**
+//     * Send message to service. Queues message if it cannot be sent immediately (can happen if the service is not yet started)
+//     *
+//     * @param message message to send
+//     * @return true if message was sent, false if it was queued for sending later
+//     */
+//    public static boolean sendServiceMessage(Message message) {
+//        if (messenger != null) {
+//            try {
+//                messenger.send(message);
+//                return true;
+//            } catch (RemoteException e) {
+//                log.error(e.getMessage());
+//            }
+//        }
+//        messageQueue.add(message);
+//        return false;
+//    }
 
     @Override
     public void onCreate() {
@@ -81,8 +81,8 @@ public class IrsshiApplication extends Application {
 
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-//                irsshiService = ((IrsshiService.LocalBinder) iBinder).getService();
-                messenger = new Messenger(iBinder);
+                irsshiService = ((IrsshiService.LocalBinder) iBinder).getService();
+//                messenger = new Messenger(iBinder);
                 while (!messageQueue.isEmpty()) {
                     try {
                         Message message = messageQueue.remove();

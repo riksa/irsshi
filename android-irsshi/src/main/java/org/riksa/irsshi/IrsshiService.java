@@ -88,7 +88,7 @@ public class IrsshiService extends Service {
     private static final String KEY_FILE_DIR = ".ssh";
 
 
-    //    private final IBinder mBinder = new LocalBinder();
+    private final IBinder binder = new LocalBinder();
     private TermHostDao termHostDao;
     private Handler handler;
     private static final List<ConnectionInfo> connections = new LinkedList<ConnectionInfo>();
@@ -302,14 +302,19 @@ public class IrsshiService extends Service {
         new Thread(runnable).start();
     }
 
-//    public class LocalBinder extends Binder {
-//        public IrsshiService getService() {
-//            return IrsshiService.this;
-//        }
-//    }
+    public void generateKeyPair(final KeyGeneratorCallback keyGeneratorCallback, final PromptPasswordCallback promptPasswordCallback, String alias, int keyType, int keyBits, String comment) {
+        keyChain.generateKeyAsync(keyGeneratorCallback, promptPasswordCallback, alias, keyType, keyBits, comment);
+    }
+
+    public class LocalBinder extends Binder {
+        public IrsshiService getService() {
+            return IrsshiService.this;
+        }
+    }
 
     public IBinder onBind(Intent intent) {
-        return messenger.getBinder(); //mBinder;
+        return binder;
+//        return messenger.getBinder(); //mBinder;
     }
 
     @Override

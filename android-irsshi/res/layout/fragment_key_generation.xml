@@ -34,20 +34,26 @@
             android:layout_height="wrap_content">
 
             <!--<TextView-->
-                <!--style="@style/label"-->
-                <!--android:text="Key type"/>-->
-        <!---->
-            <Spinner
+            <!--style="@style/label"-->
+            <!--android:text="Key type"/>-->
+            <!---->
+            <EditText
                 android:layout_alignParentTop="true"
+                android:id="@+id/alias"
+                style="@style/dialog_edit"
+                android:hint="@string/dialog_alias_hint"/>
+
+            <Spinner
                 style="@style/dialog_spinner"
                 android:id="@+id/key_type"
+                android:layout_below="@+id/alias"
                 android:entries="@array/key_types"
                 android:prompt="@string/prompt_key_type"/>
 
             <!--<TextView-->
-                <!--style="@style/label"-->
-                <!--android:text="Key strength"/>-->
-        <!---->
+            <!--style="@style/label"-->
+            <!--android:text="Key strength"/>-->
+            <!---->
             <Spinner
                 style="@style/dialog_spinner"
                 android:layout_below="@+id/key_type"
@@ -68,40 +74,40 @@
                 android:id="@+id/password_2"/>
 
             <!--<Spinner-->
-                <!--android:id="@+id/spinner"-->
-                <!--style="@style/dialog_spinner"-->
-                <!--android:layout_alignParentTop="true"-->
-                <!--android:entries="@array/host_types"/>-->
+            <!--android:id="@+id/spinner"-->
+            <!--style="@style/dialog_spinner"-->
+            <!--android:layout_alignParentTop="true"-->
+            <!--android:entries="@array/host_types"/>-->
 
             <!--<EditText-->
-                <!--style="@style/dialog_edit"-->
-                <!--android:layout_below="@+id/spinner"-->
-                <!--android:hint="@string/username_hint"-->
-                <!--android:id="@+id/username"/>-->
+            <!--style="@style/dialog_edit"-->
+            <!--android:layout_below="@+id/spinner"-->
+            <!--android:hint="@string/username_hint"-->
+            <!--android:id="@+id/username"/>-->
 
             <!--<EditText-->
-                <!--style="@style/dialog_edit"-->
-                <!--android:layout_alignBaseline="@+id/hostname"-->
-                <!--android:layout_alignParentRight="true"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:inputType="number"-->
-                <!--android:text="22"-->
-                <!--android:hint="@string/port_hint"-->
-                <!--android:id="@+id/port"/>-->
+            <!--style="@style/dialog_edit"-->
+            <!--android:layout_alignBaseline="@+id/hostname"-->
+            <!--android:layout_alignParentRight="true"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:inputType="number"-->
+            <!--android:text="22"-->
+            <!--android:hint="@string/port_hint"-->
+            <!--android:id="@+id/port"/>-->
 
             <!--<EditText-->
-                <!--style="@style/dialog_edit"-->
-                <!--android:layout_below="@+id/username"-->
-                <!--android:layout_toLeftOf="@+id/port"-->
-                <!--android:hint="@string/hostname_hint"-->
-                <!--android:inputType="textUri"-->
-                <!--android:id="@+id/hostname"/>-->
+            <!--style="@style/dialog_edit"-->
+            <!--android:layout_below="@+id/username"-->
+            <!--android:layout_toLeftOf="@+id/port"-->
+            <!--android:hint="@string/hostname_hint"-->
+            <!--android:inputType="textUri"-->
+            <!--android:id="@+id/hostname"/>-->
 
             <!--<EditText-->
-                <!--style="@style/dialog_edit"-->
-                <!--android:layout_below="@+id/hostname"-->
-                <!--android:hint="@string/nickname_hint"-->
-                <!--android:id="@+id/nickname"/>-->
+            <!--style="@style/dialog_edit"-->
+            <!--android:layout_below="@+id/hostname"-->
+            <!--android:hint="@string/nickname_hint"-->
+            <!--android:id="@+id/nickname"/>-->
 
         </RelativeLayout>
 
@@ -118,18 +124,18 @@
             android:text="@string/button_generate_key"/>
 
         <!--<Button-->
-            <!--android:layout_width="fill_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_weight="1"-->
-            <!--android:text="@string/cancel"-->
-            <!--android:id="@+id/cancel"/>-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_weight="1"-->
+        <!--android:text="@string/cancel"-->
+        <!--android:id="@+id/cancel"/>-->
 
         <!--<Button-->
-            <!--android:layout_width="fill_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_weight="1"-->
-            <!--android:text="@string/ok"-->
-            <!--android:id="@+id/ok"/>-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_weight="1"-->
+        <!--android:text="@string/ok"-->
+        <!--android:id="@+id/ok"/>-->
 
     </LinearLayout>
 

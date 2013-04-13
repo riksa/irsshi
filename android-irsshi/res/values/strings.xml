@@ -73,5 +73,8 @@
     <string name="button_generate_key">Generate Key</string>
     <string name="dialog_password_hint_1">Password</string>
     <string name="dialog_password_hint_2">Password (again)</string>
+    <string name="dialog_alias_hint">Key alias (e.g. \'default\')</string>
+    <string name="validation_error_password">Passwords do not match</string>
+
 
 </resources>

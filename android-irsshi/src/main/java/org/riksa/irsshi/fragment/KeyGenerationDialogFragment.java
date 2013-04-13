@@ -20,14 +20,16 @@ package org.riksa.irsshi.fragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.support.v4.app.DialogFragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.Spinner;
+import android.widget.*;
+import org.riksa.a3.KeyGeneratorCallback;
+import org.riksa.a3.PromptPasswordCallback;
 import org.riksa.irsshi.IrsshiApplication;
 import org.riksa.irsshi.IrsshiService;
 import org.riksa.irsshi.R;
@@ -92,6 +94,10 @@ public class KeyGenerationDialogFragment extends DialogFragment {
     }
 
     public void onGenerateKeyClicked(View view) {
+        if (!validateInputs()) {
+            return;
+        }
+
         int keyType = 1; // 1=RSA, 2=DSA
         if ("DSA".equals(keyTypeSpinner.getSelectedItem())) {
             keyType = 2;
@@ -107,14 +113,57 @@ public class KeyGenerationDialogFragment extends DialogFragment {
         log.debug("Generating {}bits {} key pair", keyBits, keyType);
 
 
-        Message message = Message.obtain(null, IrsshiService.GENERATE_KEYPAIR, keyType, keyBits, "default");
-        IrsshiApplication.sendServiceMessage(message);
+        String alias = IrsshiUtils.findView(getView(), EditText.class, R.id.alias).getText().toString();
+        if (TextUtils.isEmpty(alias)) {
+            alias = "default";
+        }
+
+        final String password = IrsshiUtils.findView(getView(), EditText.class, R.id.password_1).getText().toString();
+        KeyGeneratorCallback keyGeneratorCallback = new KeyGeneratorCallback() {
+
+            @Override
+            public void succeeded(String alias) {
+                log.debug("Generated key {}", alias);
+            }
+
+            @Override
+            public void failed(String alias, String message) {
+                log.debug("Failed to generate key {}, {}", alias, message);
+            }
+        };
+        PromptPasswordCallback promptPasswordCallback = new PromptPasswordCallback() {
+            @Override
+            public String getLockingPassword() {
+                return password;
+            }
+
+            @Override
+            public String getUnlockingPassword() {
+                return null;
+            }
+        };
+
+        IrsshiApplication.getIrsshiService().generateKeyPair(keyGeneratorCallback, promptPasswordCallback, alias, keyType, keyBits, "irSSHi-generated");
+//        Message message = Message.obtain(null, IrsshiService.GENERATE_KEYPAIR, keyType, keyBits, "default");
+//        IrsshiApplication.sendServiceMessage(message);
 
         if (keyGenerationDialogListener != null) {
             keyGenerationDialogListener.onOk();
         }
 
         dismiss();
+    }
+
+    private boolean validateInputs() {
+        boolean valid = true;
+        EditText passwordEdit1 = IrsshiUtils.findView(getView(), EditText.class, R.id.password_1);
+        EditText passwordEdit2 = IrsshiUtils.findView(getView(), EditText.class, R.id.password_2);
+        if (!passwordEdit1.getText().toString().equals(passwordEdit2.getText().toString())) {
+            valid = false;
+            passwordEdit2.setError(getString(R.string.validation_error_password));
+        }
+
+        return valid;
     }
 
     @Override

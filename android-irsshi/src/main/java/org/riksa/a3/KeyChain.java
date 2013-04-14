@@ -83,15 +83,12 @@ public class KeyChain {
         }
     }
 
-    public KeyPair load(String privateFile, String publicFile) throws JSchException {
+    public static KeyPair load(byte[] privateBytes, byte[] publicBytes) throws JSchException {
+        return KeyPair.load(getJsch(), privateBytes, publicBytes);
+    }
+
+    public static KeyPair load(String privateFile, String publicFile) throws JSchException {
         return KeyPair.load(getJsch(), privateFile, publicFile);
-//        if(load.isEncrypted()) {
-//            String unlockingPassword = prompt.getUnlockingPassword();
-//            if( unlockingPassword == null ) {
-//                load.setPassphrase( unlockingPassword );
-//                return load;
-//            }
-//        }
     }
 
     public KeyPair load(String alias) throws JSchException {

@@ -20,11 +20,13 @@ package org.riksa.a3;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.KeyPair;
 import junit.framework.TestCase;
+import org.apache.commons.io.IOUtils;
 import org.riksa.irsshi.logger.LoggerFactory;
 import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -158,59 +160,73 @@ public class KeyChainTest extends TestCase {
     }
 
     public void testImportDsaNopass() throws Exception {
-        Path irsshi = Files.createTempDirectory("irsshi");
-        KeyChain keyChain = new KeyChain(irsshi.toFile());
         PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
         when(prompt.getUnlockingPassword()).thenReturn("");
         File privateFile = findFile("/linux-generated/dsa_nopass");
         File publicFile = findFile("/linux-generated/dsa_nopass.pub");
-        KeyPair keyPair = keyChain.load(privateFile.getAbsolutePath(), publicFile.getAbsolutePath());
+        KeyPair keyPair = KeyChain.load(privateFile.getAbsolutePath(), publicFile.getAbsolutePath());
         assertFalse(keyPair.isEncrypted());
         assertEquals(KeyPair.DSA, keyPair.getKeyType());
     }
 
     public void testImportDsaPass() throws Exception {
-        Path irsshi = Files.createTempDirectory("irsshi");
-        KeyChain keyChain = new KeyChain(irsshi.toFile());
         File privateFile = findFile("/linux-generated/dsa_password");
         File publicFile = findFile("/linux-generated/dsa_password.pub");
-        KeyPair keyPair = keyChain.load(privateFile.getAbsolutePath(), publicFile.getAbsolutePath());
+        KeyPair keyPair = KeyChain.load(privateFile.getAbsolutePath(), publicFile.getAbsolutePath());
         assertTrue(keyPair.isEncrypted());
         assertEquals(KeyPair.DSA, keyPair.getKeyType());
         assertTrue(keyPair.decrypt(KEY_PASS));
     }
 
     public void testImportDsaWrongPass() throws Exception {
-        Path irsshi = Files.createTempDirectory("irsshi");
-        KeyChain keyChain = new KeyChain(irsshi.toFile());
         File privateFile = findFile("/linux-generated/dsa_password");
         File publicFile = findFile("/linux-generated/dsa_password.pub");
-        KeyPair keyPair = keyChain.load(privateFile.getAbsolutePath(), publicFile.getAbsolutePath());
+        KeyPair keyPair = KeyChain.load(privateFile.getAbsolutePath(), publicFile.getAbsolutePath());
         assertTrue(keyPair.isEncrypted());
         assertEquals(KeyPair.DSA, keyPair.getKeyType());
         assertFalse(keyPair.decrypt("wrong"));
     }
 
     public void testImportRsaNopass() throws Exception {
-        Path irsshi = Files.createTempDirectory("irsshi");
-        KeyChain keyChain = new KeyChain(irsshi.toFile());
         PromptPasswordCallback prompt = mock(PromptPasswordCallback.class);
         when(prompt.getUnlockingPassword()).thenReturn("");
         File privateFile = findFile("/linux-generated/rsa_nopass");
         File publicFile = findFile("/linux-generated/rsa_nopass.pub");
-        KeyPair keyPair = keyChain.load(privateFile.getAbsolutePath(), publicFile.getAbsolutePath());
+        KeyPair keyPair = KeyChain.load(privateFile.getAbsolutePath(), publicFile.getAbsolutePath());
         assertFalse(keyPair.isEncrypted());
         assertEquals(KeyPair.RSA, keyPair.getKeyType());
     }
 
     public void testImportRsaPass() throws Exception {
-        Path irsshi = Files.createTempDirectory("irsshi");
-        KeyChain keyChain = new KeyChain(irsshi.toFile());
+//        Path irsshi = Files.createTempDirectory("irsshi");
+//        KeyChain keyChain = new KeyChain(irsshi.toFile());
         File privateFile = findFile("/linux-generated/rsa_password");
         File publicFile = findFile("/linux-generated/rsa_password.pub");
-        KeyPair keyPair = keyChain.load(privateFile.getAbsolutePath(), publicFile.getAbsolutePath());
+        KeyPair keyPair = KeyChain.load(privateFile.getAbsolutePath(), publicFile.getAbsolutePath());
         assertTrue(keyPair.isEncrypted());
         assertEquals(KeyPair.RSA, keyPair.getKeyType());
         assertTrue(keyPair.decrypt(KEY_PASS));
     }
+
+    public void testImportPrivatePublicBytes() throws Exception {
+        File privateFile = findFile("/linux-generated/rsa_password");
+        byte[] privateBytes = IOUtils.toByteArray(new FileReader(privateFile));
+        File publicFile = findFile("/linux-generated/rsa_password.pub");
+        byte[] publicBytes = IOUtils.toByteArray(new FileReader(publicFile));
+        KeyPair keyPair = KeyChain.load(privateBytes, publicBytes);
+        assertTrue(keyPair.isEncrypted());
+        assertEquals(KeyPair.RSA, keyPair.getKeyType());
+        assertTrue(keyPair.decrypt(KEY_PASS));
+    }
+
+    public void testImportPrivateBytes() throws Exception {
+        File privateFile = findFile("/linux-generated/rsa_password");
+        byte[] privateBytes = IOUtils.toByteArray(new FileReader(privateFile));
+        byte[] publicBytes = null;
+        KeyPair keyPair = KeyChain.load(privateBytes, publicBytes);
+        assertTrue(keyPair.isEncrypted());
+        assertEquals(KeyPair.RSA, keyPair.getKeyType());
+        assertTrue(keyPair.decrypt(KEY_PASS));
+    }
+
 }

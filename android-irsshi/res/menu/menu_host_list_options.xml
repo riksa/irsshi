@@ -24,4 +24,16 @@
         android:title="@string/menu_create"
         android:showAsAction="ifRoom|withText" />
 
+    <!-- TODO: icon -->
+    <item
+        android:id="@+id/menu_generate_key"
+        android:icon="@drawable/ic_menu_add"
+        android:title="@string/menu_generate_key"/>
+
+    <!-- TODO: icon -->
+    <item
+        android:id="@+id/menu_import_key"
+        android:icon="@drawable/ic_menu_archive"
+        android:title="@string/menu_import_key"/>
+
 </menu>

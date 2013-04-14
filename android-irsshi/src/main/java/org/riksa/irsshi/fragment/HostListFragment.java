@@ -19,17 +19,16 @@ package org.riksa.irsshi.fragment;
 
 import android.app.*;
 import android.content.CursorLoader;
-import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.*;
-import android.widget.AdapterView;
-import android.widget.CursorAdapter;
-import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
-import org.riksa.irsshi.*;
+import android.widget.*;
+import org.riksa.irsshi.IrSSHiActivity;
+import org.riksa.irsshi.IrsshiApplication;
+import org.riksa.irsshi.R;
+import org.riksa.irsshi.TermHostDao;
 import org.riksa.irsshi.domain.TermHost;
 import org.riksa.irsshi.logger.LoggerFactory;
 import org.riksa.irsshi.provider.HostProviderMetaData;
@@ -116,10 +115,30 @@ public class HostListFragment extends ListFragment implements LoaderManager.Load
             case R.id.menu_create:
                 showEditDialog(-1);
                 break;
+            case R.id.menu_generate_key:
+                showGenerateKeyDialog();
+                break;
+            case R.id.menu_import_key:
+                showImportKeyDialog();
+                break;
             default:
                 log.warn("Unhandled menu item clicked");
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showGenerateKeyDialog() {
+        Toast.makeText(getActivity(), "TODO", Toast.LENGTH_SHORT).show();
+//        KeyGenerationDialogFragment dialogFragment = new KeyGenerationDialogFragment();
+//        FragmentManager fm = getActivity().getSupportFragmentManager();
+//        dialogFragment.show(fm, KeyGenerationDialogFragment.TAG);
+    }
+
+    private void showImportKeyDialog() {
+        Toast.makeText(getActivity(), "TODO", Toast.LENGTH_SHORT).show();
+//        KeyGenerationDialogFragment dialogFragment = new KeyGenerationDialogFragment();
+//        FragmentManager fm = getActivity().getSupportFragmentManager();
+//        dialogFragment.show(fm, KeyGenerationDialogFragment.TAG);
     }
 
     /**

@@ -79,6 +79,8 @@
 
     <!-- irSSHiActivity -->
     <string name="irsshi_title">irSSHi</string>
+    <string name="menu_generate_key">Generate key kair</string>
+    <string name="menu_import_key">Import key pair</string>
 
 
 </resources>

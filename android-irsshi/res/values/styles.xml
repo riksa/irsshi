@@ -88,4 +88,6 @@
         <item name="android:inputType">textPassword</item>
     </style>
 
+    <style name="button_browse" parent="button"></style>
+
 </resources>

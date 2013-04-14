@@ -22,7 +22,7 @@ package org.riksa.irsshi.fragment;
  * Date: 13.4.2013
  * Time: 11:12
  */
-public interface KeyGenerationDialogListener {
+public interface DialogListener {
     void onCancel();
 
     void onOk();

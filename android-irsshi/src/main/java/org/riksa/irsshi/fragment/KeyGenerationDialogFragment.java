@@ -17,12 +17,9 @@
 
 package org.riksa.irsshi.fragment;
 
+import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
-import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +28,6 @@ import android.widget.*;
 import org.riksa.a3.KeyGeneratorCallback;
 import org.riksa.a3.PromptPasswordCallback;
 import org.riksa.irsshi.IrsshiApplication;
-import org.riksa.irsshi.IrsshiService;
 import org.riksa.irsshi.R;
 import org.riksa.irsshi.logger.LoggerFactory;
 import org.riksa.irsshi.util.IrsshiUtils;
@@ -45,7 +41,7 @@ import org.slf4j.Logger;
 public class KeyGenerationDialogFragment extends DialogFragment {
     private static final Logger log = LoggerFactory.getLogger(KeyGenerationDialogFragment.class);
     public static final String TAG = "KeyGenerationDialogFragment";
-    private KeyGenerationDialogListener keyGenerationDialogListener;
+    private DialogListener dialogListener;
     private Spinner keyTypeSpinner;
     private Spinner keyBitsSpinner;
 
@@ -147,8 +143,8 @@ public class KeyGenerationDialogFragment extends DialogFragment {
 //        Message message = Message.obtain(null, IrsshiService.GENERATE_KEYPAIR, keyType, keyBits, "default");
 //        IrsshiApplication.sendServiceMessage(message);
 
-        if (keyGenerationDialogListener != null) {
-            keyGenerationDialogListener.onOk();
+        if (dialogListener != null) {
+            dialogListener.onOk();
         }
 
         dismiss();
@@ -169,12 +165,12 @@ public class KeyGenerationDialogFragment extends DialogFragment {
     @Override
     public void onCancel(DialogInterface dialog) {
         super.onCancel(dialog);    //To change body of overridden methods use File | Settings | File Templates.
-        if (keyGenerationDialogListener != null) {
-            keyGenerationDialogListener.onCancel();
+        if (dialogListener != null) {
+            dialogListener.onCancel();
         }
     }
 
-    public void setKeyGenerationDialogListener(KeyGenerationDialogListener keyGenerationDialogListener) {
-        this.keyGenerationDialogListener = keyGenerationDialogListener;
+    public void setDialogListener(DialogListener dialogListener) {
+        this.dialogListener = dialogListener;
     }
 }

@@ -23,9 +23,10 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
+import android.widget.Toast;
 import android.widget.ViewFlipper;
+import org.riksa.irsshi.fragment.DialogListener;
 import org.riksa.irsshi.fragment.KeyGenerationDialogFragment;
-import org.riksa.irsshi.fragment.KeyGenerationDialogListener;
 import org.riksa.irsshi.logger.LoggerFactory;
 import org.riksa.irsshi.util.IrsshiUtils;
 import org.slf4j.Logger;
@@ -58,8 +59,8 @@ public class TutorialActivity extends FragmentActivity {
 //        Intent intent = new Intent(this, KeyGenerationActivity.class);
 //        startActivityForResult(intent, REQUEST_GENERATE_FILE);
         KeyGenerationDialogFragment dialogFragment = new KeyGenerationDialogFragment();
-        dialogFragment.setKeyGenerationDialogListener(
-                new KeyGenerationDialogListener() {
+        dialogFragment.setDialogListener(
+                new DialogListener() {
                     @Override
                     public void onCancel() {
                         log.debug("onCancel");
@@ -72,8 +73,8 @@ public class TutorialActivity extends FragmentActivity {
                     }
                 });
         FragmentManager fm = getSupportFragmentManager();
-        dialogFragment.show(fm, KeyGenerationDialogFragment.TAG);
-
+        Toast.makeText(this, "TODO", Toast.LENGTH_SHORT).show(); // TODO: everything to use support library...
+//        dialogFragment.show(fm, KeyGenerationDialogFragment.TAG);
     }
 
 

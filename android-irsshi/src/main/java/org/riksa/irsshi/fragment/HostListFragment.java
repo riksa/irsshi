@@ -128,17 +128,15 @@ public class HostListFragment extends ListFragment implements LoaderManager.Load
     }
 
     private void showGenerateKeyDialog() {
-        Toast.makeText(getActivity(), "TODO", Toast.LENGTH_SHORT).show();
-//        KeyGenerationDialogFragment dialogFragment = new KeyGenerationDialogFragment();
-//        FragmentManager fm = getActivity().getSupportFragmentManager();
-//        dialogFragment.show(fm, KeyGenerationDialogFragment.TAG);
+        KeyGenerationDialogFragment dialogFragment = new KeyGenerationDialogFragment();
+        FragmentManager fm = getActivity().getFragmentManager();
+        dialogFragment.show(fm, KeyGenerationDialogFragment.TAG);
     }
 
     private void showImportKeyDialog() {
-        Toast.makeText(getActivity(), "TODO", Toast.LENGTH_SHORT).show();
-//        KeyGenerationDialogFragment dialogFragment = new KeyGenerationDialogFragment();
-//        FragmentManager fm = getActivity().getSupportFragmentManager();
-//        dialogFragment.show(fm, KeyGenerationDialogFragment.TAG);
+        KeyImportDialogFragment dialogFragment = new KeyImportDialogFragment();
+        FragmentManager fm = getActivity().getFragmentManager();
+        dialogFragment.show(fm, KeyGenerationDialogFragment.TAG);
     }
 
     /**

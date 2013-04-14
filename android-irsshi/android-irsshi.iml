@@ -44,6 +44,8 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="android-support-v4" level="project" />
+    <orderEntry type="library" name="Maven: commons-io:commons-io:2.4" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.google.android:android:4.1.1.4" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: commons-logging:commons-logging:1.1.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.httpcomponents:httpclient:4.0.1" level="project" />
@@ -63,7 +65,6 @@
     <orderEntry type="module" module-name="androidterm" />
     <orderEntry type="module" module-name="emulatorview" />
     <orderEntry type="library" name="Maven: com.madgag:scprov-jdk15on:1.47.0.1" level="project" />
-    <orderEntry type="library" name="android-support-v4" level="project" />
   </component>
 </module>
 

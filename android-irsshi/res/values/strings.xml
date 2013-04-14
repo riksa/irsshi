@@ -81,6 +81,17 @@
     <string name="irsshi_title">irSSHi</string>
     <string name="menu_generate_key">Generate key kair</string>
     <string name="menu_import_key">Import key pair</string>
+    <string name="button_browse">Browse</string>
+    <string name="browse_hint">Choose private key</string>
+    <string name="error_file_not_found">File not found</string>
+    <string name="error_cannot_read_file">Can not read file</string>
+    <string name="key_import_dialog_title">Import private key</string>
+    <string name="button_import_key">Import key</string>
+    <string name="validation_error_keyfile">Choose private key</string>
+    <string name="error_key_import">Unable to import key</string>
+    <string name="error_io_exception">Cannot read file</string>
+    <string name="validation_error_keyfile_missing">Choose valid private key</string>
+    <string name="validation_error_keyfile_invalid">Invalid private key</string>
 
 
 </resources>

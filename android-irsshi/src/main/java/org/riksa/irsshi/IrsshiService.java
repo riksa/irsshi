@@ -28,10 +28,7 @@ import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-import com.jcraft.jsch.Channel;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.Session;
-import com.jcraft.jsch.UserInfo;
+import com.jcraft.jsch.*;
 import jackpal.androidterm.emulatorview.TermSession;
 import jackpal.androidterm.util.TermSettings;
 import org.riksa.a3.KeyChain;
@@ -46,6 +43,7 @@ import org.riksa.irsshi.util.IrsshiUtils;
 import org.slf4j.Logger;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -304,6 +302,11 @@ public class IrsshiService extends Service {
 
     public void generateKeyPair(final KeyGeneratorCallback keyGeneratorCallback, final PromptPasswordCallback promptPasswordCallback, String alias, int keyType, int keyBits, String comment) {
         keyChain.generateKeyAsync(keyGeneratorCallback, promptPasswordCallback, alias, keyType, keyBits, comment);
+    }
+
+    public void importPrivateKey(String alias, byte[] privateKeyBytes, byte[] publicKeyBytes, String comment) throws JSchException, IOException {
+        KeyPair keyPair = KeyChain.load(privateKeyBytes, publicKeyBytes);
+        keyChain.save(alias, keyPair, comment);
     }
 
     public class LocalBinder extends Binder {

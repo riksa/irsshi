@@ -62,7 +62,7 @@ public class TerminalTabFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Bundle bundle = getArguments();
-        long hostId = bundle.getLong(TerminalsActivity.EXTRA_HOST_ID);
+        long hostId = bundle.getLong(IrSSHiActivity.EXTRA_HOST_ID);
 
         View layout = inflater.inflate(R.layout.fragment_terminal_tab, container, false);
 

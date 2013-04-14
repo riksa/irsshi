@@ -75,6 +75,10 @@
     <string name="dialog_password_hint_2">Password (again)</string>
     <string name="dialog_alias_hint">Key alias (e.g. \'default\')</string>
     <string name="validation_error_password">Passwords do not match</string>
+    <string name="host_list_title">Hosts</string>
+
+    <!-- irSSHiActivity -->
+    <string name="irsshi_title">irSSHi</string>
 
 
 </resources>

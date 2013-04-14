@@ -89,9 +89,12 @@
     <string name="button_import_key">Import key</string>
     <string name="validation_error_keyfile">Choose private key</string>
     <string name="error_key_import">Unable to import key</string>
-    <string name="error_io_exception">Cannot read file</string>
+    <string name="error_io_exception">Can not read file</string>
     <string name="validation_error_keyfile_missing">Choose valid private key</string>
     <string name="validation_error_keyfile_invalid">Invalid private key</string>
+    <string name="prompt_keypair">Key pair</string>
+    <string name="prompt_host_type">Host type</string>
+    <string name="spinner_select_keypair">Choose key pair...</string>
 
 
 </resources>

@@ -34,6 +34,7 @@ public abstract class AbstractHost implements TermHost {
     private int port;
     private String userName;
     private final Collection<TermHostValidationError> errors = new HashSet<TermHostValidationError>();
+    private String identityAlias;
 
     public AbstractHost(Integer id) {
         this.id = id;
@@ -114,6 +115,16 @@ public abstract class AbstractHost implements TermHost {
     @Override
     public Collection<TermHostValidationError> getErrors() {
         return errors;
+    }
+
+    @Override
+    public String getIdentityAlias() {
+        return identityAlias;
+    }
+
+    @Override
+    public void setIdentityAlias(String identityAlias) {
+        this.identityAlias = identityAlias;
     }
 
     protected boolean validateNickName() {

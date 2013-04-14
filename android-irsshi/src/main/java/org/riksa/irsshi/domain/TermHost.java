@@ -30,6 +30,10 @@ public interface TermHost {
 
     int getDefaultPort();
 
+    String getIdentityAlias();
+
+    void setIdentityAlias(String identityAlias);
+
     public enum TermHostValidationError {
         NICKNAME, HOSTNAME, PORT, USERNAME
     }

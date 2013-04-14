@@ -48,6 +48,7 @@ public class HostProvider extends ContentProvider {
         projectionMap.put(HostProviderMetaData.HostTableMetaData.HOSTNAME, HostProviderMetaData.HostTableMetaData.HOSTNAME);
         projectionMap.put(HostProviderMetaData.HostTableMetaData.PORT, HostProviderMetaData.HostTableMetaData.PORT);
         projectionMap.put(HostProviderMetaData.HostTableMetaData.USERNAME, HostProviderMetaData.HostTableMetaData.USERNAME);
+        projectionMap.put(HostProviderMetaData.HostTableMetaData.IDENTITYALIAS, HostProviderMetaData.HostTableMetaData.IDENTITYALIAS);
     }
 
     private static final UriMatcher uriMatcher;
@@ -196,7 +197,8 @@ public class HostProvider extends ContentProvider {
                     + HostProviderMetaData.HostTableMetaData.NICKNAME + " TEXT,"
                     + HostProviderMetaData.HostTableMetaData.HOSTNAME + " TEXT,"
                     + HostProviderMetaData.HostTableMetaData.PORT + " INTEGER,"
-                    + HostProviderMetaData.HostTableMetaData.USERNAME + " TEXT"
+                    + HostProviderMetaData.HostTableMetaData.USERNAME + " TEXT,"
+                    + HostProviderMetaData.HostTableMetaData.IDENTITYALIAS + " TEXT"
                     + ")";
 
             sqLiteDatabase.execSQL(CREATE_TABLE);

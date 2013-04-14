@@ -18,23 +18,23 @@
 package org.riksa.irsshi.fragment;
 
 import android.app.DialogFragment;
-import android.net.sip.SipErrorCode;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
+import org.riksa.irsshi.IrsshiApplication;
 import org.riksa.irsshi.R;
-import org.riksa.irsshi.domain.AbstractHost;
 import org.riksa.irsshi.domain.TermHost;
 import org.riksa.irsshi.domain.TermHostFactory;
 import org.riksa.irsshi.logger.LoggerFactory;
 import org.riksa.irsshi.util.IrsshiUtils;
 import org.slf4j.Logger;
+
+import java.util.List;
 
 /**
  * User: riksa
@@ -92,6 +92,8 @@ public class TermHostEditDialog extends DialogFragment {
         created.setHostName(IrsshiUtils.findView(getView(), TextView.class, R.id.hostname).getText().toString());
         created.setUserName(IrsshiUtils.findView(getView(), TextView.class, R.id.username).getText().toString());
         created.setNickName(IrsshiUtils.findView(getView(), TextView.class, R.id.nickname).getText().toString());
+        Spinner spinnerKeypair = IrsshiUtils.findView(getView(), Spinner.class, R.id.spinner_keypair);
+        created.setIdentityAlias(String.valueOf(spinnerKeypair.getSelectedItem()));
         int port = -1;
         try {
             port = Integer.parseInt(IrsshiUtils.findView(getView(), TextView.class, R.id.port).getText().toString());
@@ -136,6 +138,15 @@ public class TermHostEditDialog extends DialogFragment {
         getDialog().setTitle(termHost == null ? R.string.add_host : R.string.edit_host);
         IrsshiUtils.findView(v, Button.class, R.id.ok).setOnClickListener(okListener);
         IrsshiUtils.findView(v, Button.class, R.id.cancel).setOnClickListener(cancelListener);
+
+        Spinner spinnerKeypair = IrsshiUtils.findView(v, Spinner.class, R.id.spinner_keypair);
+        List<String> aliases = IrsshiApplication.getIrsshiService().aliases();
+        if (aliases.size() == 0) {
+            spinnerKeypair.setEnabled(false);
+        } else {
+            spinnerKeypair.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, aliases));
+        }
+
         if (termHost != null) {
             setTextViewText(v, R.id.nickname, termHost.getNickName());
             setTextViewText(v, R.id.username, termHost.getUserName());
@@ -151,6 +162,12 @@ public class TermHostEditDialog extends DialogFragment {
                     break;
                 }
                 c++;
+            }
+
+            String alias = termHost.getIdentityAlias();
+            if (aliases.contains(alias)) {
+                int position = aliases.indexOf(alias);
+                spinnerKeypair.setSelection(position);
             }
         }
 

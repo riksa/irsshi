@@ -92,6 +92,7 @@ public class ContentProviderTermHostDao implements TermHostDao {
         contentValues.put(HostProviderMetaData.HostTableMetaData.TYPE, termHost.getHostType().name());
         contentValues.put(HostProviderMetaData.HostTableMetaData.PORT, termHost.getPort());
         contentValues.put(HostProviderMetaData.HostTableMetaData.USERNAME, termHost.getUserName());
+        contentValues.put(HostProviderMetaData.HostTableMetaData.IDENTITYALIAS, termHost.getIdentityAlias());
         return contentValues;
     }
 
@@ -130,6 +131,7 @@ public class ContentProviderTermHostDao implements TermHostDao {
         final int hostNameIdx = cursor.getColumnIndex(HostProviderMetaData.HostTableMetaData.HOSTNAME);
         final int portIdx = cursor.getColumnIndex(HostProviderMetaData.HostTableMetaData.PORT);
         final int userNameIdx = cursor.getColumnIndex(HostProviderMetaData.HostTableMetaData.USERNAME);
+        final int identityAliasIdx = cursor.getColumnIndex(HostProviderMetaData.HostTableMetaData.IDENTITYALIAS);
         do {
             String hosttype = cursor.getString(typeIdx);
             TermHost host = TermHostFactory.create(hosttype, cursor.getInt(idIdx));
@@ -137,6 +139,7 @@ public class ContentProviderTermHostDao implements TermHostDao {
             host.setHostName(cursor.getString(hostNameIdx));
             host.setPort(cursor.getInt(portIdx));
             host.setUserName(cursor.getString(userNameIdx));
+            host.setIdentityAlias(cursor.getString(identityAliasIdx));
             hosts.add(host);
         } while (cursor.moveToNext());
 

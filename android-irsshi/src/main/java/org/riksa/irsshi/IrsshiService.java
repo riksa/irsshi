@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.*;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -44,6 +45,7 @@ import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -184,6 +186,12 @@ public class IrsshiService extends Service {
                 try {
                     final Object promptMutex = new Object();
                     JSch jsch = new JSch();
+                    String alias = host.getIdentityAlias();
+                    if (!TextUtils.isEmpty(alias)) {
+                        KeyPair keyPair = keyChain.load(host.getIdentityAlias());
+                        jsch.addIdentity(alias, keyPair.forSSHAgent(), null, null);
+                    }
+
                     JSch.setConfig("StrictHostKeyChecking", "no");
 
                     Session session = jsch.getSession(host.getUserName(), host.getHostName(), host.getPort());
@@ -307,6 +315,10 @@ public class IrsshiService extends Service {
     public void importPrivateKey(String alias, byte[] privateKeyBytes, byte[] publicKeyBytes, String comment) throws JSchException, IOException {
         KeyPair keyPair = KeyChain.load(privateKeyBytes, publicKeyBytes);
         keyChain.save(alias, keyPair, comment);
+    }
+
+    public List<String> aliases() {
+        return keyChain.aliases();
     }
 
     public class LocalBinder extends Binder {

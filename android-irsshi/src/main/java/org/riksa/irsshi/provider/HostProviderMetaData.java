@@ -30,7 +30,7 @@ public class HostProviderMetaData implements BaseColumns {
 
     // Database
     public static final String DB_NAME = "host.db";
-    public static final int DB_VERSION = 1;
+    public static final int DB_VERSION = 2;
 
     // Tables
 //    public static final String TABLE_HOSTS = "hosts";
@@ -54,6 +54,7 @@ public class HostProviderMetaData implements BaseColumns {
         public static final String HOSTNAME = "hostname";
         public static final String PORT = "port";
         public static final String USERNAME = "username";
+        public static final String IDENTITYALIAS = "identityalias";
     }
 
 }

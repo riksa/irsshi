@@ -36,6 +36,7 @@
             <Spinner
                 android:id="@+id/spinner"
                 style="@style/dialog_spinner"
+                android:prompt="@string/prompt_host_type"
                 android:layout_alignParentTop="true"
                 android:entries="@array/host_types"/>
 
@@ -68,6 +69,13 @@
                 android:layout_below="@+id/hostname"
                 android:hint="@string/nickname_hint"
                 android:id="@+id/nickname"/>
+
+            <Spinner
+                android:id="@+id/spinner_keypair"
+                android:prompt="@string/prompt_keypair"
+                android:layout_below="@+id/nickname"
+                style="@style/dialog_spinner"/>
+
 
         </RelativeLayout>
 

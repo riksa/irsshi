@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.security.Security;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -53,7 +54,7 @@ public class KeyChain {
         Security.addProvider(new org.spongycastle.jce.provider.BouncyCastleProvider());
     }
 
-    public Collection<String> aliases() {
+    public List<String> aliases() {
         String[] list = rootDirectory.list(new FilenameFilter() {
             @Override
             public boolean accept(File file, String s) {

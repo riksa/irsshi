@@ -18,24 +18,20 @@
 package org.riksa.irsshi.fragment;
 
 import android.app.Fragment;
-import android.content.*;
+import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Message;
-import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
-import com.jcraft.jsch.UserInfo;
-import jackpal.androidterm.TermView;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ViewFlipper;
 import jackpal.androidterm.emulatorview.EmulatorView;
 import jackpal.androidterm.emulatorview.TermSession;
-import jackpal.androidterm.emulatorview.UpdateCallback;
-import jackpal.androidterm.util.TermSettings;
-import org.riksa.irsshi.*;
+import org.riksa.irsshi.IrSSHiActivity;
+import org.riksa.irsshi.IrsshiApplication;
+import org.riksa.irsshi.R;
 import org.riksa.irsshi.domain.ConnectionInfo;
 import org.riksa.irsshi.domain.ConnectionStateChangeListener;
 import org.riksa.irsshi.domain.TermHost;
@@ -53,6 +49,7 @@ public class TerminalTabFragment extends Fragment {
 
 
     EmulatorView termView;
+    private InputMethodManager inputMethodManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,27 +65,54 @@ public class TerminalTabFragment extends Fragment {
 
         termView = (EmulatorView) layout.findViewById(R.id.term_view);
         DisplayMetrics metrics = new DisplayMetrics();
+        inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
         termView.setDensity(metrics);
+//        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        termView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                log.debug("onFocus {}", hasFocus);
+                if (hasFocus) {
+                    inputMethodManager.showSoftInput(view, 0);
+//                    getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+                }
+            }
+        });
+        termView.setOnTouchListener( new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                log.debug("onTouch");
+                inputMethodManager.showSoftInput(view, 0);
+                return false;
+            }
+        });
+        termView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                log.debug("onClick");
+                inputMethodManager.showSoftInput(view, 0);
+            }
+        });
 
-        final ViewFlipper viewFlipper = IrsshiUtils.findView( layout, ViewFlipper.class, R.id.view_flipper );
+        final ViewFlipper viewFlipper = IrsshiUtils.findView(layout, ViewFlipper.class, R.id.view_flipper);
 
         IrsshiApplication.getIrsshiService().connectToHostById(getActivity(), hostId, new ConnectionStateChangeListener() {
             @Override
             public void stateChanged(final ConnectionInfo.HostState hostState, final TermHost termHost, final TermSession session) {
-                getActivity().runOnUiThread( new Runnable() {
+                getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         switch (hostState) {
                             case CONNECTING:
-                                viewFlipper.setDisplayedChild( 0 );
+                                viewFlipper.setDisplayedChild(0);
                                 break;
                             case CONNECTED:
-                                viewFlipper.setDisplayedChild( 1 );
-                                termView.attachSession( session );
+                                viewFlipper.setDisplayedChild(1);
+                                termView.attachSession(session);
                                 break;
                             case DISCONNECTED:
-                                viewFlipper.setDisplayedChild( 2 );
+                                viewFlipper.setDisplayedChild(2);
                                 break;
                         }
                     }

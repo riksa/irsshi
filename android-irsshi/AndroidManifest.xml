@@ -39,8 +39,8 @@
         <activity
             android:name=".IrSSHiActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:label="@string/irsshi_title">
-            <!--android:windowSoftInputMode="stateVisible|adjustResize"-->
+            android:label="@string/irsshi_title"
+            android:windowSoftInputMode="stateVisible|adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

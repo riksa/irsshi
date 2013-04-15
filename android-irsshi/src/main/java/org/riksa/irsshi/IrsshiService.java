@@ -26,7 +26,6 @@ import android.content.SharedPreferences;
 import android.os.*;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import com.jcraft.jsch.*;
@@ -45,11 +44,8 @@ import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-
-import static com.jcraft.jsch.KeyPair.RSA;
 
 /**
  * User: riksa
@@ -188,8 +184,12 @@ public class IrsshiService extends Service {
                     JSch jsch = new JSch();
                     String alias = host.getIdentityAlias();
                     if (!TextUtils.isEmpty(alias)) {
-                        KeyPair keyPair = keyChain.load(host.getIdentityAlias());
-                        jsch.addIdentity(alias, keyPair.forSSHAgent(), null, null);
+                        try {
+                            KeyPair keyPair = keyChain.load(host.getIdentityAlias());
+                            jsch.addIdentity(alias, keyPair.forSSHAgent(), null, null);
+                        } catch (JSchException e) {
+                            log.error(e.getMessage(), e);
+                        }
                     }
 
                     JSch.setConfig("StrictHostKeyChecking", "no");

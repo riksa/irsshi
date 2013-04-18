@@ -30,6 +30,7 @@ import android.view.View;
 import android.widget.EditText;
 import com.jcraft.jsch.*;
 import jackpal.androidterm.emulatorview.TermSession;
+import jackpal.androidterm.util.SessionList;
 import jackpal.androidterm.util.TermSettings;
 import org.riksa.a3.KeyChain;
 import org.riksa.a3.KeyGeneratorCallback;
@@ -82,6 +83,8 @@ public class IrsshiService extends Service {
      */
     public static final int STATUS_ERROR = -1;
     private static final String KEY_FILE_DIR = ".ssh";
+    public static final int CONNECT_TIMEOUT = 20 * 1000;
+    public static final String PTY_TYPE = "vt102";
 
 
     private final IBinder binder = new LocalBinder();
@@ -158,11 +161,11 @@ public class IrsshiService extends Service {
     }
 
 
-//    public SessionList getSessions() {
-//        return sessions;
-//    }
+    public SessionList getSessions() {
+        return sessions;
+    }
 
-//    private SessionList sessions = new SessionList();
+    private SessionList sessions = new SessionList();
 
     public void connectToHostById(final Activity activity, long hostId, final ConnectionStateChangeListener connectionStateChangeListener) {
         final TermHost host = termHostDao.findHostById(hostId);
@@ -284,10 +287,12 @@ public class IrsshiService extends Service {
 
                     //            channel.setInputStream( getTermIn() );
                     //            channel.setOutputStream( getTermOut() );
+                    termSession.setDefaultUTF8Mode(true);
                     termSession.setTermOut(channel.getOutputStream());
                     termSession.setTermIn(channel.getInputStream());
+                    ((ChannelShell) channel).setPtyType(PTY_TYPE);
 
-                    channel.connect();
+                    channel.connect(CONNECT_TIMEOUT);
 //                    notifyUpdate();
                     termSession.setTitle(host.getNickName());
                     connectionInfo.setHostState(ConnectionInfo.HostState.CONNECTED);
@@ -297,6 +302,8 @@ public class IrsshiService extends Service {
                             connectionInfo.setHostState(ConnectionInfo.HostState.DISCONNECTED);
                         }
                     });
+
+                    sessions.add(termSession);
 
                 } catch (Exception e) {
                     logger.log(com.jcraft.jsch.Logger.ERROR, e.getMessage());
